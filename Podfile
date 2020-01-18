@@ -9,6 +9,7 @@ target 'MVVMReactiveApp' do
   # development pods
   pod 'CoreKit', path: 'DevelopmentPods/CoreKit'
   pod 'CoreUIKit', path: 'DevelopmentPods/CoreUIKit'
+  pod 'APIKit', path: 'DevelopmentPods/APIKit'
   pod 'ServiceKit', path: 'DevelopmentPods/ServiceKit'
 
 end

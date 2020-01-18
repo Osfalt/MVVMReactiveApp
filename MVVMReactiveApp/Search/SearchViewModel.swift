@@ -45,6 +45,17 @@ final class SearchViewModel: SearchViewModelProtocol {
     func viewDidLoad() {
         searchPipe.output.observeValues { [weak self] query in
             print("query = \(query)")
+            guard let self = self else { return }
+            let searchResult = self.searchService.searchArtists(query: query)
+            searchResult.startWithResult { result in
+                switch result {
+                case .success(let artists):
+                    print("success = \(artists)")
+
+                case .failure(let error):
+                    print("error = \(error)")
+                }
+            }
         }
     }
 
