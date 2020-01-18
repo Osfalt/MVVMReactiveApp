@@ -7,6 +7,6 @@ target 'MVVMReactiveApp' do
 	pod 'ReactiveCocoa', '~> 10.2'
 
   # development pods
-  pod 'ServiceKit', path: 'ServiceKit'
+  pod 'ServiceKit', path: 'DevelopmentPods/ServiceKit'
 
 end

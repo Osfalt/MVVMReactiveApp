@@ -2,11 +2,12 @@ PODS:
   - ReactiveCocoa (10.2.0):
     - ReactiveSwift (~> 6.2)
   - ReactiveSwift (6.2.0)
-  - ServiceKit (0.1.0)
+  - ServiceKit (0.1.0):
+    - ReactiveSwift
 
 DEPENDENCIES:
   - ReactiveCocoa (~> 10.2)
-  - ServiceKit (from `ServiceKit`)
+  - ServiceKit (from `DevelopmentPods/ServiceKit`)
 
 SPEC REPOS:
   trunk:
@@ -15,13 +16,13 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   ServiceKit:
-    :path: ServiceKit
+    :path: DevelopmentPods/ServiceKit
 
 SPEC CHECKSUMS:
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204
   ReactiveSwift: 3dc8800378110b13d40b46ab362afa9f6bcffc6c
-  ServiceKit: a0f7a6c32780315f2f9d81dde729fe7d5e903a96
+  ServiceKit: 7560df7b884b24074b67805c8f23df0af93816d9
 
-PODFILE CHECKSUM: 992d773ea1cfcfd08a975c37ea394cd8fd9685b9
+PODFILE CHECKSUM: 84eaa7c355605e57f7157c38c3bc5a321c24ab90
 
 COCOAPODS: 1.8.4

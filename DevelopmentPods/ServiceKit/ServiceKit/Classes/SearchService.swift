@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ReactiveSwift
 
 // MARK: - Protocol
 public protocol SearchServiceProtocol: AnyObject {
