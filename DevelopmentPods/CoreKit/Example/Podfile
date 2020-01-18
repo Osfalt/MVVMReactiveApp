@@ -1,0 +1,6 @@
+use_frameworks!
+target 'CoreKit_Tests' do
+  pod 'CoreKit', :path => '../'
+  
+  
+end
