@@ -28,7 +28,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         searchVC.setupViewModel(viewModel)
 
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = searchVC
+        window.rootViewController = UINavigationController(rootViewController: searchVC)
         window.makeKeyAndVisible()
         self.window = window
     }

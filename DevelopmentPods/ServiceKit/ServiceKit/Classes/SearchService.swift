@@ -10,6 +10,8 @@ import ReactiveSwift
 
 // MARK: - Protocol
 public protocol SearchServiceProtocol: AnyObject {
+
+    func searchArtists(query: String) -> SignalProducer<String, Error>
     
 }
 
@@ -18,6 +20,10 @@ final class SearchService: SearchServiceProtocol {
 
     init() {
 
+    }
+
+    func searchArtists(query: String) -> SignalProducer<String, Error> {
+        return .empty
     }
 
 }

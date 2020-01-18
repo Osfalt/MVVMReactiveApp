@@ -16,24 +16,43 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bbY-w6-DT5">
-                                <rect key="frame" x="180" y="437.5" width="54" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="FTD-Bq-Lzm">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </tableView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="7HC-6W-PBE">
+                                <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
+                            </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Found no results" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ANi-Ai-QTo">
+                                <rect key="frame" x="136" y="436.5" width="142" height="23"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="bbY-w6-DT5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ivz-yG-5DW"/>
-                            <constraint firstItem="bbY-w6-DT5" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="zLc-uC-rXE"/>
+                            <constraint firstItem="7HC-6W-PBE" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="19I-kg-W8d"/>
+                            <constraint firstItem="ANi-Ai-QTo" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="6HQ-ad-Edf"/>
+                            <constraint firstItem="FTD-Bq-Lzm" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="QNp-2f-NJ2"/>
+                            <constraint firstAttribute="bottom" secondItem="FTD-Bq-Lzm" secondAttribute="bottom" id="Shi-jg-ykd"/>
+                            <constraint firstItem="FTD-Bq-Lzm" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="T0I-95-nRS"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="FTD-Bq-Lzm" secondAttribute="trailing" id="hE9-tf-xvh"/>
+                            <constraint firstItem="7HC-6W-PBE" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="hdp-Y9-XQ0"/>
+                            <constraint firstItem="ANi-Ai-QTo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="utb-rI-U34"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <navigationItem key="navigationItem" id="Jyi-r5-xIb"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="7HC-6W-PBE" id="zl1-c2-Pxh"/>
+                        <outlet property="placeholderLabel" destination="ANi-Ai-QTo" id="kSy-ds-QCe"/>
+                        <outlet property="tableView" destination="FTD-Bq-Lzm" id="bSV-mm-vfO"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-49" y="115"/>
+            <point key="canvasLocation" x="860.86956521739137" y="114.50892857142857"/>
         </scene>
     </scenes>
 </document>

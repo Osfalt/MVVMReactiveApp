@@ -7,15 +7,34 @@
 //
 
 import UIKit
+import ReactiveCocoa
+import ReactiveSwift
+import CoreUIKit
 
 final class SearchViewController: UIViewController {
 
     // MARK: - Properties
     private var viewModel: SearchViewModelProtocol!
 
+    @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet private weak var placeholderLabel: UILabel!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    private lazy var footerLoadMoreView = LoadMoreView()
+
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.autocapitalizationType = .none
+        searchController.dimsBackgroundDuringPresentation = false
+//        definesPresentationContext = true
+        return searchController
+    }()
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        setupSearchController()
+        bindToViewModel()
 
         viewModel.viewDidLoad()
     }
@@ -23,6 +42,16 @@ final class SearchViewController: UIViewController {
     // MARK: - Setup
     func setupViewModel(_ viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
+    }
+
+    // MARK: - Private Methods
+    private func setupSearchController() {
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+    }
+
+    private func bindToViewModel() {
+        viewModel.searchObserver <~ searchController.searchBar.reactive.continuousTextValues.skipNil()
     }
 
 }
@@ -39,14 +68,6 @@ extension SearchViewController {
             preconditionFailure("There is no SearchViewController in Main storyboard")
         }
         return searchVC
-    }
-
-}
-
-public extension UIStoryboard {
-
-    static var main: UIStoryboard {
-        return UIStoryboard(name: "Main", bundle: nil)
     }
 
 }

@@ -10,15 +10,28 @@ import Foundation
 import ReactiveSwift
 import ServiceKit
 
+// MARK: - Protocol
 protocol SearchViewModelProtocol {
+
+    // in
+    var searchObserver: Signal<String, Never>.Observer { get }
+
+    // out
 
     func viewDidLoad()
 
 }
 
+// MARK: - Implementation
 final class SearchViewModel: SearchViewModelProtocol {
 
     // MARK: - Properties
+    var searchObserver: Signal<String, Never>.Observer {
+        return searchPipe.input
+    }
+
+    private let searchPipe = Signal<String, Never>.pipe()
+
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
 
@@ -30,7 +43,9 @@ final class SearchViewModel: SearchViewModelProtocol {
 
     // MARK: - Internal Methods
     func viewDidLoad() {
-
+        searchPipe.output.observeValues { [weak self] query in
+            print("query = \(query)")
+        }
     }
 
     // MARK: - Private Methods
