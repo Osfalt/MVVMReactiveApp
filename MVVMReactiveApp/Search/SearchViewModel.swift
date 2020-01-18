@@ -8,15 +8,18 @@
 
 import Foundation
 import ReactiveSwift
+import CoreKit
 import ServiceKit
 
 // MARK: - Protocol
 protocol SearchViewModelProtocol {
 
     // in
-    var searchObserver: Signal<String, Never>.Observer { get }
+    var searchQueryObserver: Signal<String, Never>.Observer { get }
 
     // out
+    var searchResults: Property<[Artist]> { get }
+    var searchErrorSignal: Signal<Error, Never> { get }
 
     func viewDidLoad()
 
@@ -25,12 +28,23 @@ protocol SearchViewModelProtocol {
 // MARK: - Implementation
 final class SearchViewModel: SearchViewModelProtocol {
 
-    // MARK: - Properties
-    var searchObserver: Signal<String, Never>.Observer {
-        return searchPipe.input
+    // MARK: - Internal Properties
+    var searchQueryObserver: Signal<String, Never>.Observer {
+        return searchQueryPipe.input
     }
 
-    private let searchPipe = Signal<String, Never>.pipe()
+    var searchResults: Property<[Artist]> {
+        return Property(searchResultsProperty)
+    }
+
+    var searchErrorSignal: Signal<Error, Never> {
+        return searchErrorPipe.output
+    }
+
+    // MARK: - Private Properties
+    private let searchQueryPipe = Signal<String, Never>.pipe()
+    private let searchResultsProperty = MutableProperty<[Artist]>([])
+    private let searchErrorPipe = Signal<Error, Never>.pipe()
 
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
@@ -43,20 +57,22 @@ final class SearchViewModel: SearchViewModelProtocol {
 
     // MARK: - Internal Methods
     func viewDidLoad() {
-        searchPipe.output.observeValues { [weak self] query in
-            print("query = \(query)")
-            guard let self = self else { return }
-            let searchResult = self.searchService.searchArtists(query: query)
-            searchResult.startWithResult { result in
-                switch result {
-                case .success(let artists):
-                    print("success = \(artists.count)")
+        searchQueryPipe.output
+            .observeValues { [weak self] query in
+                guard let self = self else { return }
+                self.searchService
+                    .searchArtists(query: query)
+                    .startWithResult { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case .success(let artists):
+                            self.searchResultsProperty.value = artists
 
-                case .failure(let error):
-                    print("error = \(error)")
+                        case .failure(let error):
+                            self.searchErrorPipe.input.send(value: error)
+                        }
                 }
             }
-        }
     }
 
     // MARK: - Private Methods

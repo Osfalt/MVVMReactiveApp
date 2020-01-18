@@ -25,7 +25,6 @@ final class SearchViewController: UIViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.autocapitalizationType = .none
         searchController.dimsBackgroundDuringPresentation = false
-//        definesPresentationContext = true
         return searchController
     }()
 
@@ -34,8 +33,8 @@ final class SearchViewController: UIViewController {
         super.viewDidLoad()
 
         setupSearchController()
+        setupTableView()
         bindToViewModel()
-
         viewModel.viewDidLoad()
     }
 
@@ -50,11 +49,35 @@ final class SearchViewController: UIViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
     }
 
+    private func setupTableView() {
+        tableView.dataSource = self
+        tableView.hideEmptyCells()
+    }
+
     private func bindToViewModel() {
-        viewModel.searchObserver <~ searchController.searchBar.reactive
+        viewModel.searchQueryObserver <~ searchController.searchBar.reactive
             .continuousTextValues
             .skipNil()
             .debounce(0.5, on: QueueScheduler.main)
+
+        let searchResultsSignal = viewModel.searchResults.signal
+        tableView.reactive.reloadData <~ searchResultsSignal.map(value: ())
+        placeholderLabel.reactive.isHidden <~ searchResultsSignal.map { !$0.isEmpty }
+    }
+
+}
+
+// MARK: - UITableViewDataSource
+extension SearchViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.searchResults.value.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ArtistCell", for: indexPath)
+        cell.textLabel?.text = viewModel.searchResults.value[indexPath.row].name
+        return cell
     }
 
 }

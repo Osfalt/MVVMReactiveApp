@@ -29,6 +29,7 @@ final class SearchService: SearchServiceProtocol {
         }
 
         guard let url = URLBuilder.searchArtists(query: query).url else {
+            // TODO: Make "Invalid URL Error"
             return .init(error: NSError(domain: "err", code: 1, userInfo: nil))
         }
         
