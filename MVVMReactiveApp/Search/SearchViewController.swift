@@ -51,7 +51,10 @@ final class SearchViewController: UIViewController {
     }
 
     private func bindToViewModel() {
-        viewModel.searchObserver <~ searchController.searchBar.reactive.continuousTextValues.skipNil()
+        viewModel.searchObserver <~ searchController.searchBar.reactive
+            .continuousTextValues
+            .skipNil()
+            .debounce(0.5, on: QueueScheduler.main)
     }
 
 }

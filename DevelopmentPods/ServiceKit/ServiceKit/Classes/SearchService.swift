@@ -24,13 +24,29 @@ final class SearchService: SearchServiceProtocol {
     }
 
     func searchArtists(query: String) -> SignalProducer<[Artist], Error> {
-        let url = URL(string: "https://api.songkick.com/api/3.0/search/artists.json?apikey=io09K9l3ebJxmxe2&query=\(query)")!
+        guard !query.isEmpty else {
+            return .init(value: [])
+        }
+
+        guard let url = URLBuilder.searchArtists(query: query).url else {
+            return .init(error: NSError(domain: "err", code: 1, userInfo: nil))
+        }
+        
         let request = URLRequest(url: url)
-        return URLSession.shared.reactive.data(with: request)
+
+        return URLSession.shared.reactive
+            .data(with: request)
+            .compactMap { (data: Data, response: URLResponse) -> (Data, HTTPURLResponse)? in
+                guard let httpResponse = response as? HTTPURLResponse else { return nil }
+                return (data, httpResponse)
+            }
             .flatMap(.latest) { (data, response) -> SignalProducer<[Artist], Error> in
+                guard 200..<300 ~= response.statusCode else {
+                    return .init(error: HTTPError.from(code: response.statusCode))
+                }
                 do {
                     let collectionResponse = try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
-                    let artists = collectionResponse.resultsPage.results.artist
+                    let artists = collectionResponse.resultsPage.results.artist ?? []
                     return .init(value: artists)
                 } catch {
                     return .init(error: error)

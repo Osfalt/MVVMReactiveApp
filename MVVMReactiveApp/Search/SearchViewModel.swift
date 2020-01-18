@@ -50,7 +50,7 @@ final class SearchViewModel: SearchViewModelProtocol {
             searchResult.startWithResult { result in
                 switch result {
                 case .success(let artists):
-                    print("success = \(artists)")
+                    print("success = \(artists.count)")
 
                 case .failure(let error):
                     print("error = \(error)")

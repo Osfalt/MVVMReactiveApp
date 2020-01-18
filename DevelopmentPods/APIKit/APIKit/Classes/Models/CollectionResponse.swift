@@ -16,7 +16,7 @@ public struct CollectionResponse<Element: Decodable> {
 public struct ResultsPage<Element: Decodable> {
 
     public struct ArtistResults<Element: Decodable> {
-        public let artist: [Element]
+        public let artist: [Element]?
     }
 
     public let results: ArtistResults<Element>
