@@ -1,0 +1,6 @@
+use_frameworks!
+target 'ServiceKit_Tests' do
+  pod 'ServiceKit', :path => '../'
+  
+  
+end

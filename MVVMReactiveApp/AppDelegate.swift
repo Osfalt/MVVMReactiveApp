@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ServiceKit
 
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,21 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        setupRootViewController()
         return true
+    }
+
+    private func setupRootViewController() {
+        let searchService = SearchServiceBuilder.makeSearchService()
+        let router = SearchRouter()
+        let viewModel = SearchViewModel(router: router, searchService: searchService)
+        let searchVC = SearchViewController.make()
+        searchVC.setupViewModel(viewModel)
+
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = searchVC
+        window.makeKeyAndVisible()
+        self.window = window
     }
 
 }
