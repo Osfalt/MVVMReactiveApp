@@ -37,21 +37,19 @@ final class SearchService: SearchServiceProtocol {
 
         return URLSession.shared.reactive
             .data(with: request)
-            .compactMap { (data: Data, response: URLResponse) -> (Data, HTTPURLResponse)? in
+            .compactMap { (data, response) -> (Data, HTTPURLResponse)? in
                 guard let httpResponse = response as? HTTPURLResponse else { return nil }
                 return (data, httpResponse)
             }
-            .flatMap(.latest) { (data, response) -> SignalProducer<[Artist], Error> in
+            .attemptMap { (data, response) -> CollectionResponse<Artist> in
                 guard 200..<300 ~= response.statusCode else {
-                    return .init(error: HTTPError.from(code: response.statusCode))
+                    throw HTTPError.from(code: response.statusCode)
                 }
-                do {
-                    let collectionResponse = try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
-                    let artists = collectionResponse.resultsPage.results.artist ?? []
-                    return .init(value: artists)
-                } catch {
-                    return .init(error: error)
-                }
+                return try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
+            }
+            .flatMap(.latest) { collectionResponse -> SignalProducer<[Artist], Error> in
+                let artists = collectionResponse.resultsPage.results.artist ?? []
+                return .init(value: artists)
             }
     }
 

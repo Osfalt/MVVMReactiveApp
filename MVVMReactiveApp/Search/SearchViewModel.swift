@@ -19,7 +19,6 @@ protocol SearchViewModelProtocol {
 
     // out
     var searchResults: Property<[Artist]> { get }
-    var searchErrorSignal: Signal<Error, Never> { get }
 
     func viewDidLoad()
 
@@ -37,14 +36,9 @@ final class SearchViewModel: SearchViewModelProtocol {
         return Property(searchResultsProperty)
     }
 
-    var searchErrorSignal: Signal<Error, Never> {
-        return searchErrorPipe.output
-    }
-
     // MARK: - Private Properties
     private let searchQueryPipe = Signal<String, Never>.pipe()
     private let searchResultsProperty = MutableProperty<[Artist]>([])
-    private let searchErrorPipe = Signal<Error, Never>.pipe()
 
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
@@ -69,12 +63,10 @@ final class SearchViewModel: SearchViewModelProtocol {
                             self.searchResultsProperty.value = artists
 
                         case .failure(let error):
-                            self.searchErrorPipe.input.send(value: error)
+                            self.router.show(error: error)
                         }
                 }
             }
     }
-
-    // MARK: - Private Methods
 
 }

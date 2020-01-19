@@ -21,10 +21,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func setupRootViewController() {
-        let searchService = SearchServiceBuilder.makeSearchService()
-        let router = SearchRouter()
-        let viewModel = SearchViewModel(router: router, searchService: searchService)
         let searchVC = SearchViewController.make()
+        let router = SearchRouter(viewController: searchVC)
+        let searchService = SearchServiceBuilder.makeSearchService()
+        let viewModel = SearchViewModel(router: router, searchService: searchService)
         searchVC.setupViewModel(viewModel)
 
         let window = UIWindow(frame: UIScreen.main.bounds)
