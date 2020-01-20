@@ -14,6 +14,8 @@
 		3145E63C23D32FD300226AE3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3145E63A23D32FD300226AE3 /* LaunchScreen.storyboard */; };
 		3145E64523D336F900226AE3 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145E64423D336F900226AE3 /* SearchViewModel.swift */; };
 		3145E64723D33BEB00226AE3 /* SearchRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145E64623D33BEB00226AE3 /* SearchRouter.swift */; };
+		3162456C23D62C9800128A9B /* SearchModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3162456B23D62C9800128A9B /* SearchModuleBuilder.swift */; };
+		3162456F23D62EB500128A9B /* DependenciesContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3162456E23D62EB500128A9B /* DependenciesContainer.swift */; };
 		BEF793A0957073242CED8E62 /* Pods_MVVMReactiveApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F8A67E97AB6C2FEABFB83DB /* Pods_MVVMReactiveApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +30,8 @@
 		3145E63D23D32FD300226AE3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3145E64423D336F900226AE3 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		3145E64623D33BEB00226AE3 /* SearchRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRouter.swift; sourceTree = "<group>"; };
+		3162456B23D62C9800128A9B /* SearchModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModuleBuilder.swift; sourceTree = "<group>"; };
+		3162456E23D62EB500128A9B /* DependenciesContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesContainer.swift; sourceTree = "<group>"; };
 		50E8D9671AE13B156C1F0921 /* Pods-MVVMReactiveApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveApp.debug.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveApp/Pods-MVVMReactiveApp.debug.xcconfig"; sourceTree = "<group>"; };
 		F63CA39D6FBD26ACF616A26F /* Pods-MVVMReactiveApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveApp.release.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveApp/Pods-MVVMReactiveApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,6 +69,7 @@
 		3145E62E23D32FD100226AE3 /* MVVMReactiveApp */ = {
 			isa = PBXGroup;
 			children = (
+				3162456D23D62EA500128A9B /* Dependencies */,
 				3145E64323D336E200226AE3 /* Search */,
 				3145E62F23D32FD100226AE3 /* AppDelegate.swift */,
 				3145E63523D32FD100226AE3 /* Main.storyboard */,
@@ -78,11 +83,20 @@
 		3145E64323D336E200226AE3 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				3162456B23D62C9800128A9B /* SearchModuleBuilder.swift */,
 				3145E63323D32FD100226AE3 /* SearchViewController.swift */,
 				3145E64423D336F900226AE3 /* SearchViewModel.swift */,
 				3145E64623D33BEB00226AE3 /* SearchRouter.swift */,
 			);
 			path = Search;
+			sourceTree = "<group>";
+		};
+		3162456D23D62EA500128A9B /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				3162456E23D62EB500128A9B /* DependenciesContainer.swift */,
+			);
+			path = Dependencies;
 			sourceTree = "<group>";
 		};
 		6C5A6E2381C40B2D01B146F4 /* Frameworks */ = {
@@ -111,6 +125,7 @@
 			buildPhases = (
 				AD08E14B509850DAA62646EF /* [CP] Check Pods Manifest.lock */,
 				3145E62823D32FD100226AE3 /* Sources */,
+				3162457023D6313700128A9B /* TODO/FIXME Script */,
 				3145E62923D32FD100226AE3 /* Frameworks */,
 				3145E62A23D32FD100226AE3 /* Resources */,
 				91D3D2E042089FBC5F96312F /* [CP] Embed Pods Frameworks */,
@@ -171,6 +186,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3162457023D6313700128A9B /* TODO/FIXME Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "TODO/FIXME Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TAGS=\"TODO:|FIXME:\"\nfind \"${SRCROOT}\" \\( -name \"*.h\" -or -name \"*.m\" -or -name \"*.swift\" \\) -not -path \"${SRCROOT}/Pods/*\" -print0 | xargs -0 egrep --with-filename --line-number --only-matching \"($TAGS).*\\$\" | perl -p -e \"s/($TAGS)/ warning: \\$1/\"\n";
+		};
 		91D3D2E042089FBC5F96312F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -221,6 +254,8 @@
 				3145E64523D336F900226AE3 /* SearchViewModel.swift in Sources */,
 				3145E63423D32FD100226AE3 /* SearchViewController.swift in Sources */,
 				3145E63023D32FD100226AE3 /* AppDelegate.swift in Sources */,
+				3162456F23D62EB500128A9B /* DependenciesContainer.swift in Sources */,
+				3162456C23D62C9800128A9B /* SearchModuleBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,23 +12,24 @@ import ServiceKit
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    // MARK: - Properties
     var window: UIWindow?
 
+    private lazy var dependenciesContainer: DependenciesContainer = DefaultDependenciesContainer()
+
+    // MARK: - Internal Methods
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setupRootViewController()
         return true
     }
 
+    // MARK: - Private Methods
     private func setupRootViewController() {
-        let searchVC = SearchViewController.make()
-        let router = SearchRouter(viewController: searchVC)
-        let searchService = SearchServiceBuilder.makeSearchService()
-        let viewModel = SearchViewModel(router: router, searchService: searchService)
-        searchVC.setupViewModel(viewModel)
-
+        let dependencies = SearchModuleDependencies(searchService: dependenciesContainer.searchService)
+        let searchViewController = SearchModuleBuilder(dependencies: dependencies).build()
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UINavigationController(rootViewController: searchVC)
+        window.rootViewController = UINavigationController(rootViewController: searchViewController)
         window.makeKeyAndVisible()
         self.window = window
     }
