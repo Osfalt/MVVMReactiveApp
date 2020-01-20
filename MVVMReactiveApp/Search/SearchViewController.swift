@@ -58,7 +58,7 @@ final class SearchViewController: UIViewController {
         viewModel.searchQueryObserver <~ searchController.searchBar.reactive
             .continuousTextValues
             .skipNil()
-            .debounce(0.5, on: QueueScheduler.main)
+            .debounce(0.3, on: QueueScheduler.main)
 
         tableView.reactive.reloadData <~ viewModel.searchResults.signal.map(value: ())
         placeholderLabel.reactive.isHidden <~ viewModel.searchResults.signal.map { !$0.isEmpty }
