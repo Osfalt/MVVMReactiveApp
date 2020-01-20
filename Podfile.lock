@@ -1,6 +1,7 @@
 PODS:
   - APIKit (0.1.0):
     - CoreKit
+    - ReactiveSwift
   - CoreKit (0.1.0)
   - CoreUIKit (0.1.0)
   - ReactiveCocoa (10.2.0):
@@ -34,7 +35,7 @@ EXTERNAL SOURCES:
     :path: DevelopmentPods/ServiceKit
 
 SPEC CHECKSUMS:
-  APIKit: 99ac5d54e37bfbce00b431c3c48c5a5318a69b5a
+  APIKit: 3d2e6d0c6a962b575b3ca5dcf66b6c1e0c794d86
   CoreKit: c2b6d57aee8a9ef394f323f48c5cf2d72e974009
   CoreUIKit: e526d6e7e4e16ce07d72d96727eeeb93b11e3cdf
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204

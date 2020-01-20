@@ -12,7 +12,8 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '11.0'
   s.source_files = 'APIKit/Classes/**/*'
-  
+
+  s.dependency 'ReactiveSwift'
   s.dependency 'CoreKit'
 
 end
