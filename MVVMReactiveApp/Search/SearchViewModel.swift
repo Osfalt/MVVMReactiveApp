@@ -53,8 +53,7 @@ final class SearchViewModel: SearchViewModelProtocol {
     func viewDidLoad() {
         searchQueryPipe.output
             .observeValues { [weak self] query in
-                guard let self = self else { return }
-                self.searchService
+                self?.searchService
                     .searchArtists(query: query)
                     .startWithResult { [weak self] result in
                         guard let self = self else { return }

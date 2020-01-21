@@ -51,6 +51,7 @@ final class SearchViewController: UIViewController {
 
     private func setupTableView() {
         tableView.dataSource = self
+        tableView.delegate = self
         tableView.hideEmptyCells()
     }
 
@@ -77,6 +78,15 @@ extension SearchViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ArtistCell", for: indexPath)
         cell.textLabel?.text = viewModel.searchResults.value[indexPath.row].name
         return cell
+    }
+
+}
+
+// MARK: - UITableViewDelegate
+extension SearchViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
 }
