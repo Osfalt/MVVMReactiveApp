@@ -11,7 +11,15 @@ import ReactiveCocoa
 import ReactiveSwift
 import CoreUIKit
 
-final class SearchViewController: UIViewController {
+final class SearchViewController: UIViewController, ViewControllerMaking {
+
+    // MARK: - ViewControllerMaking
+    typealias SomeViewController = SearchViewController
+
+    // MARK: - Constants
+    private enum Constant {
+        static let cellIdentifier = "ArtistCell"
+    }
 
     // MARK: - Properties
     private var viewModel: SearchViewModelProtocol!
@@ -75,7 +83,7 @@ extension SearchViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ArtistCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
         cell.textLabel?.text = viewModel.searchResults.value[indexPath.row].name
         return cell
     }
@@ -87,22 +95,6 @@ extension SearchViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-
-}
-
-// MARK: - Factory Method
-extension SearchViewController {
-
-    static var identifier: String {
-        return "SearchViewController"
-    }
-
-    static func make() -> SearchViewController {
-        guard let searchVC = UIStoryboard.main.instantiateViewController(withIdentifier: Self.identifier) as? SearchViewController else {
-            preconditionFailure("There is no SearchViewController in Main storyboard")
-        }
-        return searchVC
     }
 
 }
