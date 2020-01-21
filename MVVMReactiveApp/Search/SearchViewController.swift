@@ -46,7 +46,7 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
         viewModel.viewDidLoad()
     }
 
-    // MARK: - Setup
+    // MARK: - Setup ViewModel
     func setupViewModel(_ viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
     }
@@ -84,7 +84,8 @@ extension SearchViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = viewModel.searchResults.value[indexPath.row].name
+        let artist = viewModel.searchResults.value[indexPath.row]
+        cell.textLabel?.text = artist.name
         return cell
     }
 
@@ -95,6 +96,8 @@ extension SearchViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let artist = viewModel.searchResults.value[indexPath.row]
+        viewModel.artistDidSelect.send(value: artist)
     }
 
 }

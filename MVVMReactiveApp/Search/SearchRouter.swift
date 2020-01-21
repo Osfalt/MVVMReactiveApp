@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import CoreKit
 
 // MARK: - Protocol
 protocol SearchRouterProtocol {
 
+    func showEvents(forArtist artist: Artist)
     func show(error: Error)
 
 }
@@ -22,6 +24,13 @@ final class SearchRouter: SearchRouterProtocol {
 
     init(viewController: UIViewController) {
         self.viewController = viewController
+    }
+
+    func showEvents(forArtist artist: Artist) {
+        let dependencies = EventsModuleDependencies()
+        let eventsViewController = EventsModuleBuilder(dependencies: dependencies,
+                                                       artist: artist).build()
+        viewController?.navigationController?.pushViewController(eventsViewController, animated: true)
     }
 
     func show(error: Error) {

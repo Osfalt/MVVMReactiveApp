@@ -16,6 +16,7 @@ protocol SearchViewModelProtocol {
 
     // in
     var searchQueryObserver: Signal<String, Never>.Observer { get }
+    var artistDidSelect: Signal<Artist, Never>.Observer { get }
 
     // out
     var searchResults: Property<[Artist]> { get }
@@ -32,6 +33,10 @@ final class SearchViewModel: SearchViewModelProtocol {
         return searchQueryPipe.input
     }
 
+    var artistDidSelect: Signal<Artist, Never>.Observer {
+        return artistDidSelectPipe.input
+    }
+
     var searchResults: Property<[Artist]> {
         return Property(searchResultsProperty)
     }
@@ -39,6 +44,7 @@ final class SearchViewModel: SearchViewModelProtocol {
     // MARK: - Private Properties
     private let searchQueryPipe = Signal<String, Never>.pipe()
     private let searchResultsProperty = MutableProperty<[Artist]>([])
+    private let artistDidSelectPipe = Signal<Artist, Never>.pipe()
 
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
@@ -65,6 +71,11 @@ final class SearchViewModel: SearchViewModelProtocol {
                             self.router.show(error: error)
                         }
                 }
+            }
+
+        artistDidSelectPipe.output
+            .observeValues { [weak self] artist in
+                self?.router.showEvents(forArtist: artist)
             }
     }
 
