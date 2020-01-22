@@ -36,6 +36,7 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
 
         setupTableView()
         bindToViewModel()
+        viewModel.viewDidLoad()
     }
 
     // MARK: - Setup ViewModel
@@ -50,7 +51,9 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     }
 
     private func bindToViewModel() {
-        artistNameLabel.reactive.text <~ viewModel.artistProperty.map { $0.name }
+        artistNameLabel.reactive.text <~ viewModel.artist.map { $0.name }
+        tableView.reactive.reloadData <~ viewModel.events.map(value: ())
+        activityIndicator.reactive.isAnimating <~ viewModel.eventsAreLoading
     }
 
 }
@@ -59,13 +62,14 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
 extension EventsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 30
+        return viewModel.events.value.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
-        cell.textLabel?.text = "Event name"
-        cell.detailTextLabel?.text = "Event type"
+        let event = viewModel.events.value[indexPath.row]
+        cell.textLabel?.text = event.name
+        cell.detailTextLabel?.text = event.type
         return cell
     }
 

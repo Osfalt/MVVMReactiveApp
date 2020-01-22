@@ -10,6 +10,7 @@ import Foundation
 public enum URLBuilder {
 
     case searchArtists(query: String)
+    case upcomingEvents(artistID: Int)
 
     // MARK: - Constants
     private enum Constant {
@@ -21,6 +22,9 @@ public enum URLBuilder {
         switch self {
         case .searchArtists(let query):
             return searchArtistsURL(query: query)
+
+        case .upcomingEvents(let artistID):
+            return upcomingEventsURL(artistID: artistID)
         }
     }
 
@@ -43,6 +47,12 @@ public enum URLBuilder {
         var components = baseURLComponents
         components.path = path(for: "/search/artists.json")
         components.queryItems?.append(URLQueryItem(name: "query", value: query))
+        return components.url
+    }
+
+    private func upcomingEventsURL(artistID: Int) -> URL? {
+        var components = baseURLComponents
+        components.path = path(for: "/artists/\(artistID)/calendar.json")
         return components.url
     }
 

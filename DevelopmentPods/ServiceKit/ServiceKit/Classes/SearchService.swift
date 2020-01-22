@@ -43,18 +43,9 @@ final class SearchService: SearchServiceProtocol {
                 return try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
             }
             .flatMap(.latest) { collectionResponse -> SignalProducer<[Artist], Error> in
-                let artists = collectionResponse.resultsPage.results.artist ?? []
+                let artists = collectionResponse.results
                 return .init(value: artists)
             }
-    }
-
-}
-
-// MARK: - Factory
-public final class SearchServiceBuilder {
-
-    public static func makeSearchService() -> SearchServiceProtocol {
-        return SearchService(httpClient: HTTPClientBuilder.makeHTTPClient())
     }
 
 }

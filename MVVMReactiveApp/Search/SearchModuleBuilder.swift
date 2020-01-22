@@ -13,9 +13,11 @@ import ServiceKit
 final class SearchModuleDependencies {
 
     let searchService: SearchServiceProtocol
+    let eventsModuleDependencies: EventsModuleDependencies
 
-    init(searchService: SearchServiceProtocol) {
+    init(searchService: SearchServiceProtocol, eventsModuleDependencies: EventsModuleDependencies) {
         self.searchService = searchService
+        self.eventsModuleDependencies = eventsModuleDependencies
     }
 
 }
@@ -31,7 +33,8 @@ final class SearchModuleBuilder {
 
     func build() -> UIViewController {
         let viewController = SearchViewController.make()
-        let router = SearchRouter(viewController: viewController)
+        let router = SearchRouter(viewController: viewController,
+                                  eventsModuleDependencies: dependencies.eventsModuleDependencies)
         let searchService = dependencies.searchService
         let viewModel = SearchViewModel(router: router, searchService: searchService)
         viewController.setupViewModel(viewModel)

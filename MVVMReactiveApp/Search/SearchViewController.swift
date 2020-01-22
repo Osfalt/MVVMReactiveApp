@@ -26,7 +26,6 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
 
     @IBOutlet private weak var tableView: UITableView!
     @IBOutlet private weak var placeholderLabel: UILabel!
-    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     private lazy var footerLoadMoreView = LoadMoreView()
 
     private lazy var searchController: UISearchController = {
@@ -64,7 +63,7 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
     }
 
     private func bindToViewModel() {
-        viewModel.searchQueryObserver <~ searchController.searchBar.reactive
+        viewModel.searchQuery <~ searchController.searchBar.reactive
             .continuousTextValues
             .skipNil()
             .debounce(0.3, on: QueueScheduler.main)

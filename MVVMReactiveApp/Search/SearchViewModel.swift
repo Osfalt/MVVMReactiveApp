@@ -15,13 +15,13 @@ import ServiceKit
 protocol SearchViewModelProtocol {
 
     // in
-    var searchQueryObserver: Signal<String, Never>.Observer { get }
+    var searchQuery: Signal<String, Never>.Observer { get }
     var artistDidSelect: Signal<Artist, Never>.Observer { get }
+
+    func viewDidLoad()
 
     // out
     var searchResults: Property<[Artist]> { get }
-
-    func viewDidLoad()
 
 }
 
@@ -29,7 +29,7 @@ protocol SearchViewModelProtocol {
 final class SearchViewModel: SearchViewModelProtocol {
 
     // MARK: - Internal Properties
-    var searchQueryObserver: Signal<String, Never>.Observer {
+    var searchQuery: Signal<String, Never>.Observer {
         return searchQueryPipe.input
     }
 
@@ -61,6 +61,7 @@ final class SearchViewModel: SearchViewModelProtocol {
             .observeValues { [weak self] query in
                 self?.searchService
                     .searchArtists(query: query)
+                    .observe(on: UIScheduler())
                     .startWithResult { [weak self] result in
                         guard let self = self else { return }
                         switch result {

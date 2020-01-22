@@ -26,8 +26,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Private Methods
     private func setupRootViewController() {
-        let dependencies = SearchModuleDependencies(searchService: dependenciesContainer.searchService)
-        let searchViewController = SearchModuleBuilder(dependencies: dependencies).build()
+        let eventsModuleDependencies = EventsModuleDependencies(eventsService: dependenciesContainer.eventsService)
+
+        let searchModuleDependencies = SearchModuleDependencies(searchService: dependenciesContainer.searchService,
+                                                                eventsModuleDependencies: eventsModuleDependencies)
+
+        let searchViewController = SearchModuleBuilder(dependencies: searchModuleDependencies).build()
+
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UINavigationController(rootViewController: searchViewController)
         window.makeKeyAndVisible()

@@ -21,14 +21,15 @@ protocol SearchRouterProtocol {
 final class SearchRouter: SearchRouterProtocol {
 
     private weak var viewController: UIViewController?
+    private let eventsModuleDependencies: EventsModuleDependencies
 
-    init(viewController: UIViewController) {
+    init(viewController: UIViewController, eventsModuleDependencies: EventsModuleDependencies) {
         self.viewController = viewController
+        self.eventsModuleDependencies = eventsModuleDependencies
     }
 
     func showEvents(forArtist artist: Artist) {
-        let dependencies = EventsModuleDependencies()
-        let eventsViewController = EventsModuleBuilder(dependencies: dependencies,
+        let eventsViewController = EventsModuleBuilder(dependencies: eventsModuleDependencies,
                                                        artist: artist).build()
         viewController?.navigationController?.pushViewController(eventsViewController, animated: true)
     }
