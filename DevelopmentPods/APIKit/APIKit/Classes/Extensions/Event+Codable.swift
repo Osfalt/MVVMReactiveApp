@@ -17,6 +17,9 @@ extension Event: Codable {
         case type
         case start
         case date
+        case popularity
+        case location
+        case city
     }
 
     // MARK: - Decodable
@@ -25,15 +28,22 @@ extension Event: Codable {
         let id = try container.decode(Int.self, forKey: .id)
         let name = try container.decode(String.self, forKey: .name)
         let type = try container.decode(String.self, forKey: .type)
+        let popularity = try container.decode(Double.self, forKey: .popularity)
 
+        // date
         let startContainer = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .start)
-
-        var date: Date?
-        if let dateString = try startContainer.decodeIfPresent(String.self, forKey: .date) {
-            date = DateFormatter.apiDateFormatter.date(from: dateString)
+        let dateString = try startContainer.decode(String.self, forKey: .date)
+        guard let date = DateFormatter.apiDateFormatter.date(from: dateString) else {
+            throw DecodingError.dataCorruptedError(forKey: CodingKeys.date,
+                                                   in: startContainer,
+                                                   debugDescription: "Wrong date format")
         }
 
-        self.init(id: id, name: name, type: type, date: date)
+        // city
+        let locationContainer = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .location)
+        let city = try locationContainer.decode(String.self, forKey: .city)
+
+        self.init(id: id, name: name, type: type, date: date, city: city, popularity: popularity)
     }
 
     // MARK: - Encodable
@@ -42,12 +52,16 @@ extension Event: Codable {
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
         try container.encode(type, forKey: .type)
+        try container.encode(popularity, forKey: .popularity)
 
+        // date
         var startContainer = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .start)
-        if let date = date {
-            let dateString = DateFormatter.apiDateFormatter.string(from: date)
-            try startContainer.encode(dateString, forKey: .date)
-        }
+        let dateString = DateFormatter.apiDateFormatter.string(from: date)
+        try startContainer.encode(dateString, forKey: .date)
+
+        // city
+        var locationContainer = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .location)
+        try locationContainer.encode(city, forKey: .city)
     }
 
 }

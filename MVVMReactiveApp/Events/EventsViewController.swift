@@ -80,14 +80,9 @@ extension EventsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
-
         let event = viewModel.events.value[indexPath.row]
         cell.textLabel?.text = event.name
-
-        if let date = event.date {
-            cell.detailTextLabel?.text = dateFormatter.string(from: date)
-        }
-
+        cell.detailTextLabel?.text = dateFormatter.string(from: event.date) + ", " + event.city
         return cell
     }
 
