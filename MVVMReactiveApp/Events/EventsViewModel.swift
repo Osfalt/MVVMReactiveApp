@@ -15,6 +15,7 @@ import ServiceKit
 protocol EventsViewModelProtocol {
 
     // in
+    var pullToRefreshDidTrigger: Signal<Void, Never>.Observer { get }
     func viewDidLoad()
 
     // out
@@ -38,9 +39,19 @@ final class EventsViewModel: EventsViewModelProtocol {
         return eventsAreLoadingPipe.output
     }
 
+    var pullToRefreshDidTrigger: Signal<Void, Never>.Observer {
+        return pullToRefreshDidTriggerPipe.input
+    }
+
     // MARK: - Private Properties
     private let eventsProperty = MutableProperty<[Event]>([])
     private let eventsAreLoadingPipe = Signal<Bool, Never>.pipe()
+    private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
+
+    private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID -> SignalProducer<[Event], Error> in
+        guard let self = self else { return .empty }
+        return self.eventsService.upcomingEvents(forArtistID: artistID)
+    }
 
     private let router: EventsRouterProtocol
     private let eventsService: EventsServiceProtocol
@@ -54,8 +65,17 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     // MARK: - Internal Methods
     func viewDidLoad() {
-        eventsService
-            .upcomingEvents(forArtistID: artist.value.id)
+        eventsAreLoadingPipe.input <~ fetchEvents.isExecuting
+        pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in self?.performFetchEvents() }
+
+        performFetchEvents()
+    }
+
+    // MARK: - Private Methods
+    private func performFetchEvents() {
+        fetchEvents
+            .apply(artist.value.id)
+            .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithResult { [weak self] result in
                 guard let self = self else { return }

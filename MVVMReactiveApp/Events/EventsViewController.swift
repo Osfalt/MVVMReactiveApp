@@ -28,7 +28,9 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     @IBOutlet private weak var artistNameLabel: UILabel!
     @IBOutlet private weak var artistImageView: UIImageView!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var placeholderLabel: UILabel!
     private lazy var footerLoadMoreView = LoadMoreView()
+    private lazy var refreshControl = UIRefreshControl()
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -48,12 +50,17 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     private func setupTableView() {
         tableView.dataSource = self
         tableView.hideEmptyCells()
+        tableView.refreshControl = refreshControl
     }
 
     private func bindToViewModel() {
+        viewModel.pullToRefreshDidTrigger <~ refreshControl.reactive.controlEvents(.valueChanged).map(value: ())
+
         artistNameLabel.reactive.text <~ viewModel.artist.map { $0.name }
         tableView.reactive.reloadData <~ viewModel.events.map(value: ())
         activityIndicator.reactive.isAnimating <~ viewModel.eventsAreLoading
+        refreshControl.reactive.isRefreshing <~ viewModel.eventsAreLoading.skip(first: 2)
+        placeholderLabel.reactive.isHidden <~ viewModel.events.signal.map { !$0.isEmpty }
     }
 
 }

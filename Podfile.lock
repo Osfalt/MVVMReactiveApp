@@ -2,7 +2,8 @@ PODS:
   - APIKit (0.1.0):
     - CoreKit
     - ReactiveSwift
-  - CoreKit (0.1.0)
+  - CoreKit (0.1.0):
+    - ReactiveSwift
   - CoreUIKit (0.1.0)
   - ReactiveCocoa (10.2.0):
     - ReactiveSwift (~> 6.2)
@@ -36,7 +37,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   APIKit: 3d2e6d0c6a962b575b3ca5dcf66b6c1e0c794d86
-  CoreKit: c2b6d57aee8a9ef394f323f48c5cf2d72e974009
+  CoreKit: 4ece129f71cf759ff4b0581bcaf16964743efd6b
   CoreUIKit: e526d6e7e4e16ce07d72d96727eeeb93b11e3cdf
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204
   ReactiveSwift: 3dc8800378110b13d40b46ab362afa9f6bcffc6c

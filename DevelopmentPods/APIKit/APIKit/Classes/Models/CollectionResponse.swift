@@ -42,10 +42,10 @@ extension CollectionResponse: Decodable {
 
         var results: [Element] = []
         if Element.self == Artist.self {
-            let artists = try resultsContainer.decode([Artist].self, forKey: .artist)
+            let artists = try resultsContainer.decodeIfPresent([Artist].self, forKey: .artist) ?? []
             results = artists as! [Element]
         } else if Element.self == Event.self {
-            let events = try resultsContainer.decode([Event].self, forKey: .event)
+            let events = try resultsContainer.decodeIfPresent([Event].self, forKey: .event) ?? []
             results = events as! [Element]
         }
 

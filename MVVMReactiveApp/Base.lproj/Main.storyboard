@@ -141,6 +141,12 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="iu1-1x-Pfx">
                                 <rect key="frame" x="188.5" y="474.5" width="37" height="37"/>
                             </activityIndicatorView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No upcoming events" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BaU-8k-rsU">
+                                <rect key="frame" x="119.5" y="481.5" width="175.5" height="23"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -148,6 +154,8 @@
                             <constraint firstItem="tej-FP-BNo" firstAttribute="top" secondItem="PWb-NG-Uim" secondAttribute="top" id="IVw-rC-yar"/>
                             <constraint firstItem="gUZ-6q-sNv" firstAttribute="trailing" secondItem="tej-FP-BNo" secondAttribute="trailing" id="MK9-BP-WaA"/>
                             <constraint firstAttribute="bottom" secondItem="tej-FP-BNo" secondAttribute="bottom" id="PXZ-90-Oyq"/>
+                            <constraint firstItem="iu1-1x-Pfx" firstAttribute="centerY" secondItem="BaU-8k-rsU" secondAttribute="centerY" id="cMC-st-NwR"/>
+                            <constraint firstItem="iu1-1x-Pfx" firstAttribute="centerX" secondItem="BaU-8k-rsU" secondAttribute="centerX" id="lS7-wy-cBR"/>
                             <constraint firstItem="iu1-1x-Pfx" firstAttribute="centerX" secondItem="PWb-NG-Uim" secondAttribute="centerX" id="so8-ta-daK"/>
                             <constraint firstItem="iu1-1x-Pfx" firstAttribute="centerY" secondItem="PWb-NG-Uim" secondAttribute="centerY" multiplier="1.1" id="szM-gV-if6"/>
                         </constraints>
@@ -157,6 +165,7 @@
                         <outlet property="activityIndicator" destination="iu1-1x-Pfx" id="LUt-4B-ksP"/>
                         <outlet property="artistImageView" destination="j8x-6E-ITr" id="23g-ur-t4Y"/>
                         <outlet property="artistNameLabel" destination="tr2-Rn-8ix" id="l8l-wv-6ka"/>
+                        <outlet property="placeholderLabel" destination="BaU-8k-rsU" id="kI8-pm-GE1"/>
                         <outlet property="tableView" destination="tej-FP-BNo" id="Mq3-lQ-duy"/>
                     </connections>
                 </viewController>
