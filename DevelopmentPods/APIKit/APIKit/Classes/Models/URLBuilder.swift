@@ -11,6 +11,7 @@ public enum URLBuilder {
 
     case searchArtists(query: String)
     case upcomingEvents(artistID: Int)
+    case pastEvents(artistID: Int, ascending: Bool)
 
     // MARK: - Constants
     private enum Constant {
@@ -25,6 +26,9 @@ public enum URLBuilder {
 
         case .upcomingEvents(let artistID):
             return upcomingEventsURL(artistID: artistID)
+
+        case .pastEvents(let artistID, let ascending):
+            return pastEventsURL(artistID: artistID, ascending: ascending)
         }
     }
 
@@ -53,6 +57,13 @@ public enum URLBuilder {
     private func upcomingEventsURL(artistID: Int) -> URL? {
         var components = baseURLComponents
         components.path = path(for: "/artists/\(artistID)/calendar.json")
+        return components.url
+    }
+
+    private func pastEventsURL(artistID: Int, ascending: Bool) -> URL? {
+        var components = baseURLComponents
+        components.path = path(for: "/artists/\(artistID)/gigography.json")
+        components.queryItems?.append(URLQueryItem(name: "order", value: ascending ? "asc" : "desc"))
         return components.url
     }
 

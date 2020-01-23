@@ -20,12 +20,15 @@ public protocol SearchServiceProtocol: AnyObject {
 // MARK: - Implementation
 final class SearchService: SearchServiceProtocol {
 
+    // MARK: - Private Properties
     private let httpClient: HTTPClient
 
+    // MARK: - Init
     init(httpClient: HTTPClient) {
         self.httpClient = httpClient
     }
 
+    // MARK: - Internal Methods
     func searchArtists(query: String) -> SignalProducer<[Artist], Error> {
         guard !query.isEmpty else {
             return .init(value: [])
@@ -35,10 +38,8 @@ final class SearchService: SearchServiceProtocol {
             return .init(error: URLError(.badURL))
         }
 
-        let request = URLRequest(url: url)
-
         return httpClient
-            .requestData(request)
+            .requestData(URLRequest(url: url))
             .attemptMap { (data, response) -> CollectionResponse<Artist> in
                 return try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
             }

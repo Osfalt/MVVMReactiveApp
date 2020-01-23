@@ -71,10 +71,10 @@
             </objects>
             <point key="canvasLocation" x="860.86956521739137" y="114.50892857142857"/>
         </scene>
-        <!--Events-->
+        <!--Past Events-->
         <scene sceneID="FCy-aN-F6r">
             <objects>
-                <viewController storyboardIdentifier="EventsViewController" title="Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EventsViewController" title="Past Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PWb-NG-Uim">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -131,7 +131,7 @@
                                                     <rect key="frame" x="20" y="31.5" width="44" height="14.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <nil key="textColor"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>

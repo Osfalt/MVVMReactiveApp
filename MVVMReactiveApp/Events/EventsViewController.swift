@@ -32,6 +32,12 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     private lazy var footerLoadMoreView = LoadMoreView()
     private lazy var refreshControl = UIRefreshControl()
 
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM yyyy"
+        return formatter
+    }()
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,9 +80,14 @@ extension EventsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
+
         let event = viewModel.events.value[indexPath.row]
         cell.textLabel?.text = event.name
-        cell.detailTextLabel?.text = event.type
+
+        if let date = event.date {
+            cell.detailTextLabel?.text = dateFormatter.string(from: date)
+        }
+
         return cell
     }
 

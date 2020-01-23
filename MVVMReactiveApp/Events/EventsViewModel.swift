@@ -51,7 +51,7 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID -> SignalProducer<[Event], Error> in
         guard let self = self else { return .empty }
-        return self.eventsService.upcomingEvents(forArtistID: artistID)
+        return self.eventsService.pastEvents(forArtistID: artistID, ascending: false)
     }
 
     private let router: EventsRouterProtocol
