@@ -23,9 +23,11 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
 
     // MARK: - Properties
     private var viewModel: SearchViewModelProtocol!
+    private let (lifetime, token) = Lifetime.make()
 
     @IBOutlet private weak var tableView: UITableView!
     @IBOutlet private weak var placeholderLabel: UILabel!
+    @IBOutlet private weak var bottomConstraint: NSLayoutConstraint!
     private lazy var footerLoadMoreView = LoadMoreView()
 
     private lazy var searchController: UISearchController = {
@@ -42,6 +44,7 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
         setupSearchController()
         setupTableView()
         bindToViewModel()
+        observeKeyboard()
         viewModel.viewDidLoad()
     }
 
@@ -70,6 +73,24 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
 
         tableView.reactive.reloadData <~ viewModel.searchResults.signal.map(value: ())
         placeholderLabel.reactive.isHidden <~ viewModel.searchResults.signal.map { !$0.isEmpty }
+    }
+
+    private func observeKeyboard() {
+        NotificationCenter.default.reactive
+            .keyboardChange
+            .take(during: lifetime)
+            .observeValues { [weak self] info in
+                guard let self = self else { return }
+                let keyboardIsShowing = info.endFrame.origin.y < UIScreen.main.bounds.height
+                self.bottomConstraint.constant = keyboardIsShowing ? info.endFrame.height : 0
+                UIView.animate(
+                    withDuration: info.animationDuration,
+                    animations: {
+                        UIView.setAnimationCurve(info.animationCurve)
+                        self.view.layoutSubviews()
+                    }
+                )
+            }
     }
 
 }

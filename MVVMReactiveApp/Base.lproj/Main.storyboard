@@ -62,6 +62,7 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="Search artists"/>
                     </userDefinedRuntimeAttributes>
                     <connections>
+                        <outlet property="bottomConstraint" destination="Shi-jg-ykd" id="3y5-lR-zcy"/>
                         <outlet property="placeholderLabel" destination="ANi-Ai-QTo" id="kSy-ds-QCe"/>
                         <outlet property="tableView" destination="FTD-Bq-Lzm" id="bSV-mm-vfO"/>
                     </connections>

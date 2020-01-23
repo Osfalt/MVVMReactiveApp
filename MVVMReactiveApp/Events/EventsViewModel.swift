@@ -16,6 +16,7 @@ protocol EventsViewModelProtocol {
 
     // in
     var pullToRefreshDidTrigger: Signal<Void, Never>.Observer { get }
+
     func viewDidLoad()
 
     // out
