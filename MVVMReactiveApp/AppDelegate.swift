@@ -26,7 +26,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Private Methods
     private func setupRootViewController() {
-        let eventsModuleDependencies = EventsModuleDependencies(eventsService: dependenciesContainer.eventsService)
+        let eventsModuleDependencies = EventsModuleDependencies(eventsService: dependenciesContainer.eventsService,
+                                                                imageLoader: dependenciesContainer.imageLoader)
 
         let searchModuleDependencies = SearchModuleDependencies(searchService: dependenciesContainer.searchService,
                                                                 eventsModuleDependencies: eventsModuleDependencies)

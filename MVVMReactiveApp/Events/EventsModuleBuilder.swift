@@ -14,9 +14,11 @@ import ServiceKit
 final class EventsModuleDependencies {
 
     let eventsService: EventsServiceProtocol
+    let imageLoader: ImageLoaderProtocol
 
-    init(eventsService: EventsServiceProtocol) {
+    init(eventsService: EventsServiceProtocol, imageLoader: ImageLoaderProtocol) {
         self.eventsService = eventsService
+        self.imageLoader = imageLoader
     }
 
 }
@@ -35,8 +37,10 @@ final class EventsModuleBuilder {
     func build() -> UIViewController {
         let viewController = EventsViewController.make()
         let router = EventsRouter(viewController: viewController)
-        let eventsService = dependencies.eventsService
-        let viewModel = EventsViewModel(router: router, eventsService: eventsService, artist: artist)
+        let viewModel = EventsViewModel(router: router,
+                                        eventsService: dependencies.eventsService,
+                                        imageLoader: dependencies.imageLoader,
+                                        artist: artist)
         viewController.setupViewModel(viewModel)
         return viewController
     }

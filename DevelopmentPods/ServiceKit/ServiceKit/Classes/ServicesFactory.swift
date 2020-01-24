@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import APIKit
+import CoreKit
 
 public final class ServicesFactory {
 

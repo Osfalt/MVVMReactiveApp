@@ -11,9 +11,6 @@ import ReactiveSwift
 import CoreKit
 import ServiceKit
 
-// TODO: remove APIKit
-import APIKit
-
 // MARK: - Protocol
 protocol EventsViewModelProtocol {
 
@@ -74,13 +71,14 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private lazy var downloadArtistPhoto = Action<URL, UIImage?, Error> { [weak self] photoURL in
         guard let self = self else { return .empty }
-        return HTTPClientBuilder.makeHTTPClient()
-            .requestData(URLRequest(url: photoURL))
-            .map { UIImage(data: $0.0) }
+        return self.imageLoader
+            .loadImage(with: photoURL)
+            .map { $0.image }
     }
 
     private let router: EventsRouterProtocol
     private let eventsService: EventsServiceProtocol
+    private let imageLoader: ImageLoaderProtocol
 
     private lazy var eventDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -89,9 +87,14 @@ final class EventsViewModel: EventsViewModelProtocol {
     }()
 
     // MARK: - Init
-    init(router: EventsRouterProtocol, eventsService: EventsServiceProtocol, artist: Artist) {
+    init(router: EventsRouterProtocol,
+         eventsService: EventsServiceProtocol,
+         imageLoader: ImageLoaderProtocol,
+         artist: Artist)
+    {
         self.router = router
         self.eventsService = eventsService
+        self.imageLoader = imageLoader
         self.artistProperty = Property(value: artist)
         setupModelsMapping()
     }
