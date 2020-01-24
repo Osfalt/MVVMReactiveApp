@@ -11,6 +11,9 @@ import ReactiveSwift
 import CoreKit
 import ServiceKit
 
+// TODO: remove APIKit
+import APIKit
+
 // MARK: - Protocol
 protocol EventsViewModelProtocol {
 
@@ -20,7 +23,9 @@ protocol EventsViewModelProtocol {
     func viewDidLoad()
 
     // out
-    var artist: Property<Artist> { get }
+    var artistName: Property<String> { get }
+    var artistPhoto: Signal<UIImage?, Never> { get }
+    var artistPhotoIsLoading: Signal<Bool, Never> { get }
     var events: Property<[EventCellModel]> { get }
     var eventsAreLoading: Signal<Bool, Never> { get }
 
@@ -30,14 +35,24 @@ protocol EventsViewModelProtocol {
 final class EventsViewModel: EventsViewModelProtocol {
 
     // MARK: - Internal Properties
-    let artist: Property<Artist>
+    var artistName: Property<String> {
+        return artistProperty.map { $0.name }
+    }
+
+    var artistPhoto: Signal<UIImage?, Never> {
+        return downloadArtistPhoto.values
+    }
+
+    var artistPhotoIsLoading: Signal<Bool, Never> {
+        return downloadArtistPhoto.isExecuting.signal
+    }
 
     var events: Property<[EventCellModel]> {
         return Property(eventsCellModelsProperty)
     }
 
     var eventsAreLoading: Signal<Bool, Never> {
-        return eventsAreLoadingPipe.output
+        return fetchEvents.isExecuting.signal
     }
 
     var pullToRefreshDidTrigger: Signal<Void, Never>.Observer {
@@ -45,15 +60,23 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     // MARK: - Private Properties
+    private let artistProperty: Property<Artist>
+
     private let eventsProperty = MutableProperty<[Event]>([])
     private let eventsCellModelsProperty = MutableProperty<[EventCellModel]>([])
 
-    private let eventsAreLoadingPipe = Signal<Bool, Never>.pipe()
     private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
 
-    private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID -> SignalProducer<[Event], Error> in
+    private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID in
         guard let self = self else { return .empty }
         return self.eventsService.pastEvents(forArtistID: artistID, ascending: false)
+    }
+
+    private lazy var downloadArtistPhoto = Action<URL, UIImage?, Error> { [weak self] photoURL in
+        guard let self = self else { return .empty }
+        return HTTPClientBuilder.makeHTTPClient()
+            .requestData(URLRequest(url: photoURL))
+            .map { UIImage(data: $0.0) }
     }
 
     private let router: EventsRouterProtocol
@@ -69,16 +92,16 @@ final class EventsViewModel: EventsViewModelProtocol {
     init(router: EventsRouterProtocol, eventsService: EventsServiceProtocol, artist: Artist) {
         self.router = router
         self.eventsService = eventsService
-        self.artist = Property(value: artist)
+        self.artistProperty = Property(value: artist)
         setupModelsMapping()
     }
 
     // MARK: - Internal Methods
     func viewDidLoad() {
-        eventsAreLoadingPipe.input <~ fetchEvents.isExecuting
-        pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in self?.performFetchEvents() }
+        pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in self?.startFetchEvents() }
 
-        performFetchEvents()
+        startDownloadArtistPhoto()
+        startFetchEvents()
     }
 
     // MARK: - Private Methods
@@ -95,9 +118,19 @@ final class EventsViewModel: EventsViewModelProtocol {
             }
     }
 
-    private func performFetchEvents() {
+    private func startDownloadArtistPhoto() {
+        downloadArtistPhoto
+            .apply(artistProperty.value.avatarURL(size: .large))
+            .mapError { $0.underlyingError }
+            .observe(on: UIScheduler())
+            .startWithFailed { [weak self] error in
+                self?.router.show(error: error)
+            }
+    }
+
+    private func startFetchEvents() {
         fetchEvents
-            .apply(artist.value.id)
+            .apply(artistProperty.value.id)
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithResult { [weak self] result in

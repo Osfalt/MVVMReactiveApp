@@ -71,10 +71,10 @@
             </objects>
             <point key="canvasLocation" x="860.86956521739137" y="114.50892857142857"/>
         </scene>
-        <!--Past Events-->
+        <!--Events-->
         <scene sceneID="FCy-aN-F6r">
             <objects>
-                <viewController storyboardIdentifier="EventsViewController" title="Past Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EventsViewController" title="Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PWb-NG-Uim">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -94,7 +94,10 @@
                                                 <constraint firstAttribute="width" constant="70" id="lZY-3Y-L6U"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tr2-Rn-8ix">
+                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="r9r-P0-rH6">
+                                            <rect key="frame" x="45" y="37" width="20" height="20"/>
+                                        </activityIndicatorView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Artist" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tr2-Rn-8ix">
                                             <rect key="frame" x="106" y="35" width="292" height="24"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <nil key="textColor"/>
@@ -109,6 +112,8 @@
                                         <constraint firstAttribute="trailing" secondItem="tr2-Rn-8ix" secondAttribute="trailing" constant="16" id="X6n-Y8-TTR"/>
                                         <constraint firstAttribute="bottom" secondItem="j8x-6E-ITr" secondAttribute="bottom" constant="12" id="c9j-xf-Z7n"/>
                                         <constraint firstItem="tr2-Rn-8ix" firstAttribute="leading" secondItem="j8x-6E-ITr" secondAttribute="trailing" constant="16" id="eL9-m6-JGA"/>
+                                        <constraint firstItem="r9r-P0-rH6" firstAttribute="centerY" secondItem="j8x-6E-ITr" secondAttribute="centerY" id="foF-mn-YJ4"/>
+                                        <constraint firstItem="r9r-P0-rH6" firstAttribute="centerX" secondItem="j8x-6E-ITr" secondAttribute="centerX" id="gqc-XZ-V9O"/>
                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="tr2-Rn-8ix" secondAttribute="bottom" constant="12" id="jLT-tg-Kr2"/>
                                         <constraint firstItem="tr2-Rn-8ix" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Rdg-0R-3ss" secondAttribute="top" constant="12" id="rME-DU-DLm"/>
                                     </constraints>
@@ -143,8 +148,8 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="iu1-1x-Pfx">
                                 <rect key="frame" x="188.5" y="474.5" width="37" height="37"/>
                             </activityIndicatorView>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No upcoming events" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BaU-8k-rsU">
-                                <rect key="frame" x="119.5" y="481.5" width="175.5" height="23"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No events found" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BaU-8k-rsU">
+                                <rect key="frame" x="137" y="481.5" width="140" height="23"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -164,9 +169,10 @@
                         <viewLayoutGuide key="safeArea" id="gUZ-6q-sNv"/>
                     </view>
                     <connections>
-                        <outlet property="activityIndicator" destination="iu1-1x-Pfx" id="LUt-4B-ksP"/>
-                        <outlet property="artistImageView" destination="j8x-6E-ITr" id="23g-ur-t4Y"/>
                         <outlet property="artistNameLabel" destination="tr2-Rn-8ix" id="l8l-wv-6ka"/>
+                        <outlet property="artistPhotoImageView" destination="j8x-6E-ITr" id="Oef-4y-jcJ"/>
+                        <outlet property="eventsActivityIndicator" destination="iu1-1x-Pfx" id="tRe-NB-CLG"/>
+                        <outlet property="photoActivityIndicator" destination="r9r-P0-rH6" id="aPt-fg-ezC"/>
                         <outlet property="placeholderLabel" destination="BaU-8k-rsU" id="kI8-pm-GE1"/>
                         <outlet property="tableView" destination="tej-FP-BNo" id="Mq3-lQ-duy"/>
                     </connections>
