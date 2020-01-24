@@ -21,7 +21,7 @@ protocol EventsViewModelProtocol {
 
     // out
     var artist: Property<Artist> { get }
-    var events: Property<[Event]> { get }
+    var events: Property<[EventCellModel]> { get }
     var eventsAreLoading: Signal<Bool, Never> { get }
 
 }
@@ -32,8 +32,8 @@ final class EventsViewModel: EventsViewModelProtocol {
     // MARK: - Internal Properties
     let artist: Property<Artist>
 
-    var events: Property<[Event]> {
-        return Property(eventsProperty)
+    var events: Property<[EventCellModel]> {
+        return Property(eventsCellModelsProperty)
     }
 
     var eventsAreLoading: Signal<Bool, Never> {
@@ -46,6 +46,8 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     // MARK: - Private Properties
     private let eventsProperty = MutableProperty<[Event]>([])
+    private let eventsCellModelsProperty = MutableProperty<[EventCellModel]>([])
+
     private let eventsAreLoadingPipe = Signal<Bool, Never>.pipe()
     private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
 
@@ -57,11 +59,18 @@ final class EventsViewModel: EventsViewModelProtocol {
     private let router: EventsRouterProtocol
     private let eventsService: EventsServiceProtocol
 
+    private lazy var eventDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM yyyy"
+        return formatter
+    }()
+
     // MARK: - Init
     init(router: EventsRouterProtocol, eventsService: EventsServiceProtocol, artist: Artist) {
         self.router = router
         self.eventsService = eventsService
         self.artist = Property(value: artist)
+        setupModelsMapping()
     }
 
     // MARK: - Internal Methods
@@ -73,6 +82,19 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     // MARK: - Private Methods
+    private func setupModelsMapping() {
+        eventsCellModelsProperty <~ eventsProperty
+            .map { [weak self] events -> [EventCellModel] in
+                guard let self = self else { return [] }
+                return events.map {
+                    EventCellModel(
+                        name: $0.name,
+                        details: self.eventDateFormatter.string(from: $0.date) + ", " + $0.city
+                    )
+                }
+            }
+    }
+
     private func performFetchEvents() {
         fetchEvents
             .apply(artist.value.id)
