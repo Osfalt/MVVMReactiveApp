@@ -16,12 +16,12 @@ protocol SearchViewModelProtocol {
 
     // in
     var searchQuery: Signal<String, Never>.Observer { get }
-    var artistDidSelect: Signal<Artist, Never>.Observer { get }
+    var searchResultDidSelect: Signal<IndexPath, Never>.Observer { get }
 
     func viewDidLoad()
 
     // out
-    var searchResults: Property<[Artist]> { get }
+    var searchResults: Property<[SearchCellModel]> { get }
 
 }
 
@@ -33,18 +33,19 @@ final class SearchViewModel: SearchViewModelProtocol {
         return searchQueryPipe.input
     }
 
-    var artistDidSelect: Signal<Artist, Never>.Observer {
+    var searchResultDidSelect: Signal<IndexPath, Never>.Observer {
         return artistDidSelectPipe.input
     }
 
-    var searchResults: Property<[Artist]> {
-        return Property(searchResultsProperty)
+    var searchResults: Property<[SearchCellModel]> {
+        return Property(artistsCellModelsProperty)
     }
 
     // MARK: - Private Properties
     private let searchQueryPipe = Signal<String, Never>.pipe()
     private let searchResultsProperty = MutableProperty<[Artist]>([])
-    private let artistDidSelectPipe = Signal<Artist, Never>.pipe()
+    private let artistsCellModelsProperty = MutableProperty<[SearchCellModel]>([])
+    private let artistDidSelectPipe = Signal<IndexPath, Never>.pipe()
 
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
@@ -53,10 +54,24 @@ final class SearchViewModel: SearchViewModelProtocol {
     init(router: SearchRouterProtocol, searchService: SearchServiceProtocol) {
         self.router = router
         self.searchService = searchService
+        setupModelsMapping()
     }
 
     // MARK: - Internal Methods
     func viewDidLoad() {
+        observeSearchQuery()
+        observeArtistSelection()
+    }
+
+    // MARK: - Private Methods
+    private func setupModelsMapping() {
+        artistsCellModelsProperty <~ searchResultsProperty
+            .map { artists -> [SearchCellModel] in
+                return artists.map { SearchCellModel(name: $0.name) }
+            }
+    }
+
+    private func observeSearchQuery() {
         searchQueryPipe.output
             .observeValues { [weak self] query in
                 self?.searchService
@@ -71,12 +86,16 @@ final class SearchViewModel: SearchViewModelProtocol {
                         case .failure(let error):
                             self.router.show(error: error)
                         }
-                }
+                    }
             }
+    }
 
+    private func observeArtistSelection() {
         artistDidSelectPipe.output
-            .observeValues { [weak self] artist in
-                self?.router.showEvents(forArtist: artist)
+            .observeValues { [weak self] indexPath in
+                guard let self = self else { return }
+                let artist = self.searchResultsProperty.value[indexPath.row]
+                self.router.showEvents(forArtist: artist)
             }
     }
 

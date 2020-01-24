@@ -18,7 +18,7 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
 
     // MARK: - Constants
     private enum Constant {
-        static let cellIdentifier = "ArtistCell"
+        static let cellIdentifier = "SearchCell"
     }
 
     // MARK: - Properties
@@ -104,8 +104,8 @@ extension SearchViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constant.cellIdentifier, for: indexPath)
-        let artist = viewModel.searchResults.value[indexPath.row]
-        cell.textLabel?.text = artist.name
+        let searchResult = viewModel.searchResults.value[indexPath.row]
+        cell.textLabel?.text = searchResult.name
         return cell
     }
 
@@ -116,8 +116,7 @@ extension SearchViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let artist = viewModel.searchResults.value[indexPath.row]
-        viewModel.artistDidSelect.send(value: artist)
+        viewModel.searchResultDidSelect.send(value: indexPath)
     }
 
 }
