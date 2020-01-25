@@ -66,7 +66,9 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID in
         guard let self = self else { return .empty }
-        return self.eventsService.pastEvents(forArtistID: artistID, ascending: false)
+        return self.eventsService
+            .pastEvents(forArtistID: artistID, ascending: false)
+            .observe(on: UIScheduler())
     }
 
     private lazy var downloadArtistPhoto = Action<URL, UIImage?, Error> { [weak self] photoURL in
@@ -74,6 +76,7 @@ final class EventsViewModel: EventsViewModelProtocol {
         return self.imageLoader
             .loadImage(with: photoURL)
             .map { $0.image }
+            .observe(on: UIScheduler())
     }
 
     private let router: EventsRouterProtocol

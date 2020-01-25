@@ -19,12 +19,12 @@ public protocol ImageLoaderProtocol: AnyObject {
 }
 
 // MARK: - Implementation
-final class DefaultImageLoader: ImageLoaderProtocol {
+final class ImageLoader: ImageLoaderProtocol {
 
-    // MARK: - Private types
+    // MARK: - Private Types
     private typealias CacheKey = NSString
 
-    // MARK: - Private properties
+    // MARK: - Private Properties
     private let configuration: Configuration
     private let imageCache: NSCache<CacheKey, UIImage>
     private let httpClient: HTTPClient
@@ -51,11 +51,11 @@ final class DefaultImageLoader: ImageLoaderProtocol {
             .map { data, _ in
                 (image: UIImage(data: data), size: data.count)
             }
-            .on { [weak self] image, size in
+            .on(value: { [weak self] image, size in
                 self?.saveToInMemoryCacheIfNeeded(image: image,
                                                   forKey: imageURL.absoluteString,
                                                   cost: size)
-            }
+            })
             .map { (image: $0.image, isFromCache: false) }
     }
 
@@ -70,7 +70,7 @@ final class DefaultImageLoader: ImageLoaderProtocol {
 }
 
 // MARK: - Configuration
-extension DefaultImageLoader {
+extension ImageLoader {
 
     struct Configuration {
 
@@ -99,11 +99,29 @@ extension DefaultImageLoader {
 
 }
 
+// MARK: - Private Extensions
+// it prevents eviction of image from memory in background mode
+extension UIImage: NSDiscardableContent {
+
+    public func beginContentAccess() -> Bool {
+        return true
+    }
+
+    public func endContentAccess() { }
+
+    public func discardContentIfPossible() { }
+
+    public func isContentDiscarded() -> Bool {
+        return false
+    }
+
+}
+
 // MARK: - Factory
 public final class ImageLoaderBuilder {
 
     public static func makeImageLoader() -> ImageLoaderProtocol {
-        return DefaultImageLoader()
+        return ImageLoader()
     }
 
 }
