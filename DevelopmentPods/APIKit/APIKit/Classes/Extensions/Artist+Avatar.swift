@@ -10,7 +10,7 @@ import CoreKit
 
 extension Artist {
 
-    public func avatarURL(size: APIResource.Size) -> URL {
+    public func avatarURL(size: APIResource.Size = .large) -> URL {
         return APIResource.avatar.url(forID: id, size: size)
     }
 

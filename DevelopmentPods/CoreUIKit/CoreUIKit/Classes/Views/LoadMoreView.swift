@@ -16,7 +16,14 @@ public final class LoadMoreView: UIView {
 
     // MARK: - Private properties
     private lazy var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        let style: UIActivityIndicatorView.Style
+        if #available(iOS 13.0, *) {
+            style = .medium
+        } else {
+            style = .gray
+        }
+        
+        let activityIndicator = UIActivityIndicatorView(style: style)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.hidesWhenStopped = false
         activityIndicator.startAnimating()

@@ -14,14 +14,14 @@ import ServiceKit
 // MARK: - Protocol
 protocol SearchViewModelProtocol {
 
-    // in
+    // output
+    var searchResults: Property<[SearchCellModel]> { get }
+
+    // input
     var searchQuery: Signal<String, Never>.Observer { get }
     var searchResultDidSelect: Signal<IndexPath, Never>.Observer { get }
 
     func viewDidLoad()
-
-    // out
-    var searchResults: Property<[SearchCellModel]> { get }
 
 }
 

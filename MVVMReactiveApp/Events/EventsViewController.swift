@@ -19,19 +19,20 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     // MARK: - Constants
     private enum Constant {
         static let cellIdentifier = "EventCell"
+        static let loadMoreThreshold = 5
     }
 
     // MARK: - Properties
     private var viewModel: EventsViewModelProtocol!
 
-    @IBOutlet private weak var tableView: UITableView!
+    @IBOutlet fileprivate weak var tableView: UITableView!
     @IBOutlet private weak var artistNameLabel: UILabel!
     @IBOutlet private weak var artistPhotoImageView: UIImageView!
     @IBOutlet private weak var photoActivityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var eventsActivityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var placeholderLabel: UILabel!
-    private lazy var footerLoadMoreView = LoadMoreView()
     private lazy var refreshControl = UIRefreshControl()
+    fileprivate lazy var footerLoadMoreView = LoadMoreView()
 
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -56,8 +57,9 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     // MARK: - Private Methods
     private func setupTableView() {
         tableView.dataSource = self
-        tableView.hideEmptyCells()
+        tableView.delegate = self
         tableView.refreshControl = refreshControl
+        tableView.hideEmptyCells()
     }
 
     private func bindToViewModel() {
@@ -70,6 +72,7 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
         eventsActivityIndicator.reactive.isAnimating <~ viewModel.eventsAreLoading.take(first: 2)
         refreshControl.reactive.isRefreshing <~ viewModel.eventsAreLoading.skip(first: 2)
         placeholderLabel.reactive.isHidden <~ viewModel.events.signal.map { !$0.isEmpty }
+        reactive.isShowLoadMoreFooter <~ viewModel.eventsAreLoadingMore
     }
 
 }
@@ -87,6 +90,29 @@ extension EventsViewController: UITableViewDataSource {
         cell.textLabel?.text = event.name
         cell.detailTextLabel?.text = event.details
         return cell
+    }
+
+}
+
+// MARK: - UITableViewDelegate
+extension EventsViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard indexPath.row >= viewModel.events.value.count - Constant.loadMoreThreshold - 1 else {
+            return
+        }
+        viewModel.loadMoreDidTrigger.send(value: ())
+    }
+
+}
+
+// MARK: - Custom Binding Targets
+private extension Reactive where Base: EventsViewController {
+
+    var isShowLoadMoreFooter: BindingTarget<Bool> {
+        return makeBindingTarget { eventsVC, isLoadingMore in
+            eventsVC.tableView.tableFooterView = isLoadingMore ? eventsVC.footerLoadMoreView : UIView()
+        }
     }
 
 }

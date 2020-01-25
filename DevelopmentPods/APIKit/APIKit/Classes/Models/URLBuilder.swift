@@ -11,7 +11,7 @@ public enum URLBuilder {
 
     case searchArtists(query: String)
     case upcomingEvents(artistID: Int)
-    case pastEvents(artistID: Int, ascending: Bool)
+    case pastEvents(artistID: Int, ascending: Bool, page: Int, perPage: Int)
 
     // MARK: - Constants
     private enum Constant {
@@ -27,8 +27,8 @@ public enum URLBuilder {
         case .upcomingEvents(let artistID):
             return upcomingEventsURL(artistID: artistID)
 
-        case .pastEvents(let artistID, let ascending):
-            return pastEventsURL(artistID: artistID, ascending: ascending)
+        case .pastEvents(let artistID, let ascending, let page, let perPage):
+            return pastEventsURL(artistID: artistID, ascending: ascending, page: page, perPage: perPage)
         }
     }
 
@@ -60,10 +60,12 @@ public enum URLBuilder {
         return components.url
     }
 
-    private func pastEventsURL(artistID: Int, ascending: Bool) -> URL? {
+    private func pastEventsURL(artistID: Int, ascending: Bool, page: Int, perPage: Int) -> URL? {
         var components = baseURLComponents
         components.path = path(for: "/artists/\(artistID)/gigography.json")
         components.queryItems?.append(URLQueryItem(name: "order", value: ascending ? "asc" : "desc"))
+        components.queryItems?.append(URLQueryItem(name: "page", value: String(page)))
+        components.queryItems?.append(URLQueryItem(name: "per_page", value: String(perPage)))
         return components.url
     }
 

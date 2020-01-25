@@ -71,10 +71,10 @@
             </objects>
             <point key="canvasLocation" x="860.86956521739137" y="114.50892857142857"/>
         </scene>
-        <!--Events-->
+        <!--Past Events-->
         <scene sceneID="FCy-aN-F6r">
             <objects>
-                <viewController storyboardIdentifier="EventsViewController" title="Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EventsViewController" title="Past Events" id="Q1v-Py-dYs" customClass="EventsViewController" customModule="MVVMReactiveApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PWb-NG-Uim">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

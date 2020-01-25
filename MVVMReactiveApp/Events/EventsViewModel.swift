@@ -14,27 +14,33 @@ import ServiceKit
 // MARK: - Protocol
 protocol EventsViewModelProtocol {
 
-    // in
-    var pullToRefreshDidTrigger: Signal<Void, Never>.Observer { get }
-
-    func viewDidLoad()
-
-    // out
+    // output
     var artistName: Property<String> { get }
     var artistPhoto: Signal<UIImage?, Never> { get }
     var artistPhotoIsLoading: Signal<Bool, Never> { get }
     var events: Property<[EventCellModel]> { get }
     var eventsAreLoading: Signal<Bool, Never> { get }
+    var eventsAreLoadingMore: Signal<Bool, Never> { get }
+
+    // input
+    var pullToRefreshDidTrigger: Signal<Void, Never>.Observer { get }
+    var loadMoreDidTrigger: Signal<Void, Never>.Observer { get }
+
+    func viewDidLoad()
 
 }
 
 // MARK: - Implementation
 final class EventsViewModel: EventsViewModelProtocol {
 
-    // MARK: - Constants
+    // MARK: - Private Types
     private enum Constant {
         static let defaultPhotoSize = CGSize(width: 70, height: 70)
+        static let firstPage = 1
+        static let defaultPerPage = 30
     }
+
+    private typealias FetchParams = (artistID: Int, page: Int)
 
     // MARK: - Internal Properties
     var artistName: Property<String> {
@@ -57,8 +63,19 @@ final class EventsViewModel: EventsViewModelProtocol {
         return fetchEvents.isExecuting.signal
     }
 
+    var eventsAreLoadingMore: Signal<Bool, Never> {
+        return fetchEvents.isExecuting.signal
+            .filter { [weak self] _ in
+                self?.page != Constant.firstPage
+            }
+    }
+
     var pullToRefreshDidTrigger: Signal<Void, Never>.Observer {
         return pullToRefreshDidTriggerPipe.input
+    }
+
+    var loadMoreDidTrigger: Signal<Void, Never>.Observer {
+        return loadMoreDidTriggerPipe.input
     }
 
     // MARK: - Private Properties
@@ -68,11 +85,12 @@ final class EventsViewModel: EventsViewModelProtocol {
     private let eventsCellModelsProperty = MutableProperty<[EventCellModel]>([])
 
     private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
+    private let loadMoreDidTriggerPipe = Signal<Void, Never>.pipe()
 
-    private lazy var fetchEvents = Action<Int, [Event], Error> { [weak self] artistID in
+    private lazy var fetchEvents = Action<FetchParams, [Event], Error> { [weak self] artistID, page in
         guard let self = self else { return .empty }
         return self.eventsService
-            .pastEvents(forArtistID: artistID, ascending: false)
+            .pastEvents(forArtistID: artistID, ascending: false, page: page, perPage: Constant.defaultPerPage)
             .observe(on: UIScheduler())
     }
 
@@ -87,6 +105,9 @@ final class EventsViewModel: EventsViewModelProtocol {
     private let router: EventsRouterProtocol
     private let eventsService: EventsServiceProtocol
     private let imageLoader: ImageLoaderProtocol
+
+    private var page = Constant.firstPage
+    private var isLastPage = false
 
     private lazy var eventDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -109,10 +130,24 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     // MARK: - Internal Methods
     func viewDidLoad() {
-        pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in self?.startFetchEvents() }
+        pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in
+            guard let self = self else { return }
+            self.page = Constant.firstPage
+            self.isLastPage = false
+            self.startFetchEvents(page: self.page)
+        }
+
+        loadMoreDidTriggerPipe.output.observeValues { [weak self] in
+            guard let self = self,
+                !self.fetchEvents.isExecuting.value,
+                !self.isLastPage else {
+                    return
+            }
+            self.startFetchEvents(page: self.page)
+        }
 
         startDownloadArtistPhoto()
-        startFetchEvents()
+        startFetchEvents(page: page)
     }
 
     // MARK: - Private Methods
@@ -131,7 +166,7 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private func startDownloadArtistPhoto() {
         downloadArtistPhoto
-            .apply(artistProperty.value.avatarURL(size: .large))
+            .apply(artistProperty.value.avatarURL())
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithFailed { [weak self] error in
@@ -139,21 +174,32 @@ final class EventsViewModel: EventsViewModelProtocol {
             }
     }
 
-    private func startFetchEvents() {
+    private func startFetchEvents(page: Int) {
+        let fetchParams = (artistID: artistProperty.value.id, page: page)
         fetchEvents
-            .apply(artistProperty.value.id)
+            .apply(fetchParams)
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                 case .success(let events):
-                    self.eventsProperty.value = events
+                    self.handle(events: events)
 
                 case .failure(let error):
                     self.router.show(error: error)
                 }
             }
+    }
+
+    private func handle(events: [Event]) {
+        if page == Constant.firstPage {
+            eventsProperty.value = []
+        }
+
+        eventsProperty.value += events
+        isLastPage = events.isEmpty
+        page += 1
     }
 
 }

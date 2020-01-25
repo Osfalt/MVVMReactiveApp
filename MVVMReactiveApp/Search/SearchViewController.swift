@@ -28,7 +28,6 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
     @IBOutlet private weak var tableView: UITableView!
     @IBOutlet private weak var placeholderLabel: UILabel!
     @IBOutlet private weak var bottomConstraint: NSLayoutConstraint!
-    private lazy var footerLoadMoreView = LoadMoreView()
 
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)

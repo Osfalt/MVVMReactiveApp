@@ -44,7 +44,9 @@ final class DefaultHTTPClient: HTTPClient {
 public final class HTTPClientBuilder {
 
     public static func makeHTTPClient() -> HTTPClient {
-        return DefaultHTTPClient()
+        let configuration = URLSessionConfiguration.default
+        configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        return DefaultHTTPClient(session: .init(configuration: configuration))
     }
 
 }

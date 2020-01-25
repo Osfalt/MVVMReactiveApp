@@ -13,8 +13,9 @@ import APIKit
 // MARK: - Protocol
 public protocol EventsServiceProtocol: AnyObject {
 
-    func upcomingEvents(forArtistID id: Int) -> SignalProducer<[Event], Error>
-    func pastEvents(forArtistID id: Int, ascending: Bool) -> SignalProducer<[Event], Error>
+    func upcomingEvents(forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
+
+    func pastEvents(forArtistID id: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
 
 }
 
@@ -36,17 +37,17 @@ final class EventsService: EventsServiceProtocol {
     }
 
     // MARK: - Internal Methods
-    func upcomingEvents(forArtistID id: Int) -> SignalProducer<[Event], Error> {
-        return events(type: .upcoming, forArtistID: id)
+    func upcomingEvents(forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
+        return events(type: .upcoming, forArtistID: id, page: page, perPage: perPage)
     }
 
-    func pastEvents(forArtistID id: Int, ascending: Bool) -> SignalProducer<[Event], Error> {
-        return events(type: .past(ascending: ascending), forArtistID: id)
+    func pastEvents(forArtistID id: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
+        return events(type: .past(ascending: ascending), forArtistID: id, page: page, perPage: perPage)
     }
 
     // MARK: - Private Methods
-    private func events(type: EventType, forArtistID id: Int) -> SignalProducer<[Event], Error> {
-        guard let url = eventsURL(type: type, forArtistID: id) else {
+    private func events(type: EventType, forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
+        guard let url = eventsURL(type: type, forArtistID: id, page: page, perPage: perPage) else {
             return .init(error: URLError(.badURL))
         }
 
@@ -61,13 +62,16 @@ final class EventsService: EventsServiceProtocol {
             }
     }
 
-    private func eventsURL(type: EventType, forArtistID id: Int) -> URL? {
+    private func eventsURL(type: EventType, forArtistID id: Int, page: Int, perPage: Int) -> URL? {
         switch type {
         case .upcoming:
             return URLBuilder.upcomingEvents(artistID: id).url
 
         case .past(let ascending):
-            return URLBuilder.pastEvents(artistID: id, ascending: ascending).url
+            return URLBuilder.pastEvents(artistID: id,
+                                         ascending: ascending,
+                                         page: page,
+                                         perPage: perPage).url
         }
     }
 
