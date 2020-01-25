@@ -31,6 +31,11 @@ protocol EventsViewModelProtocol {
 // MARK: - Implementation
 final class EventsViewModel: EventsViewModelProtocol {
 
+    // MARK: - Constants
+    private enum Constant {
+        static let defaultPhotoSize = CGSize(width: 70, height: 70)
+    }
+
     // MARK: - Internal Properties
     var artistName: Property<String> {
         return artistProperty.map { $0.name }
@@ -74,7 +79,7 @@ final class EventsViewModel: EventsViewModelProtocol {
     private lazy var downloadArtistPhoto = Action<URL, UIImage?, Error> { [weak self] photoURL in
         guard let self = self else { return .empty }
         return self.imageLoader
-            .loadImage(with: photoURL)
+            .loadImage(at: photoURL, size: Constant.defaultPhotoSize)
             .map { $0.image }
             .observe(on: UIScheduler())
     }

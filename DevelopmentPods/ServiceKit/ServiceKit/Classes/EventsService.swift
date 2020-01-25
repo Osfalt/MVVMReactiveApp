@@ -53,7 +53,7 @@ final class EventsService: EventsServiceProtocol {
         return httpClient
             .requestData(URLRequest(url: url))
             .attemptMap { (data, response) -> CollectionResponse<Event> in
-                return try JSONDecoder().decode(CollectionResponse<Event>.self, from: data)
+                try JSONDecoder().decode(CollectionResponse<Event>.self, from: data)
             }
             .flatMap(.latest) { collectionResponse -> SignalProducer<[Event], Error> in
                 let events = collectionResponse.results

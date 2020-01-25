@@ -14,7 +14,8 @@ public protocol ImageLoaderProtocol: AnyObject {
 
     typealias ImageResponse = (image: UIImage?, isFromCache: Bool)
 
-    func loadImage(with imageURL: URL) -> SignalProducer<ImageResponse, Error>
+    func loadImage(at imageURL: URL) -> SignalProducer<ImageResponse, Error>
+    func loadImage(at imageURL: URL, size: CGSize?) -> SignalProducer<ImageResponse, Error>
 
 }
 
@@ -26,45 +27,70 @@ final class ImageLoader: ImageLoaderProtocol {
 
     // MARK: - Private Properties
     private let configuration: Configuration
-    private let imageCache: NSCache<CacheKey, UIImage>
     private let httpClient: HTTPClient
+    private let imageResizer: ImageResizerProtocol
+    private let imageCache: NSCache<CacheKey, UIImage>
 
     // MARK: - Init
     init(configuration: Configuration = .init(cacheType: .inMemory),
-         httpClient: HTTPClient = DefaultHTTPClient())
+         httpClient: HTTPClient = DefaultHTTPClient(),
+         imageResizer: ImageResizerProtocol = ImageResizer())
     {
         self.configuration = configuration
         self.httpClient = httpClient
+        self.imageResizer = imageResizer
 
         imageCache = NSCache()
         imageCache.totalCostLimit = configuration.inMemoryCacheTotalSize
     }
 
     // MARK: - Internal Methods
-    func loadImage(with imageURL: URL) -> SignalProducer<ImageResponse, Error> {
-        if let cachedImage = imageCache.object(forKey: imageURL.absoluteString as NSString) {
+    func loadImage(at imageURL: URL) -> SignalProducer<ImageResponse, Error> {
+        return loadImage(at: imageURL, size: nil)
+    }
+
+    func loadImage(at imageURL: URL, size: CGSize?) -> SignalProducer<ImageResponse, Error> {
+        let cacheKey = self.cacheKey(for: imageURL, size: size)
+        if let cachedImage = imageCache.object(forKey: cacheKey) {
             return SignalProducer { (image: cachedImage, isFromCache: true) }
         }
 
         return httpClient
             .requestData(URLRequest(url: imageURL))
-            .map { data, _ in
-                (image: UIImage(data: data), size: data.count)
+            .map { [weak self] data, _ -> (UIImage?, Int) in
+                guard let self = self else { return (nil, 0) }
+                var loadedImage = UIImage(data: data)
+
+                if let size = size, let image = loadedImage {
+                    loadedImage = self.imageResizer.resizeImage(image, for: size)
+                }
+
+                return (image: loadedImage, sizeInBytes: data.count)
             }
-            .on(value: { [weak self] image, size in
-                self?.saveToInMemoryCacheIfNeeded(image: image,
-                                                  forKey: imageURL.absoluteString,
-                                                  cost: size)
+            .on(value: { [weak self] image, sizeInBytes in
+                guard let self = self else { return }
+                self.saveToInMemoryCacheIfNeeded(image: image,
+                                                 forKey: self.cacheKey(for: imageURL, size: size),
+                                                 cost: sizeInBytes)
             })
-            .map { (image: $0.image, isFromCache: false) }
+            .map { (image: $0.0, isFromCache: false) }
     }
+    
 
     // MARK: - Private Methods
-    private func saveToInMemoryCacheIfNeeded(image: UIImage?, forKey key: String, cost: Int) {
+    private func saveToInMemoryCacheIfNeeded(image: UIImage?, forKey key: NSString, cost: Int) {
         guard let image = image else { return }
         if configuration.cacheType == .inMemory  {
-            imageCache.setObject(image, forKey: key as NSString, cost: cost)
+            imageCache.setObject(image, forKey: key, cost: cost)
         }
+    }
+
+    private func cacheKey(for url: URL, size: CGSize?) -> NSString {
+        var key = url.absoluteString
+        if let size = size {
+            key.append("-w\(size.width)-h\(size.height))")
+        }
+        return key as NSString
     }
 
 }
@@ -99,7 +125,7 @@ extension ImageLoader {
 
 }
 
-// MARK: - Private Extensions
+// MARK: - Helper Extensions
 // it prevents eviction of image from memory in background mode
 extension UIImage: NSDiscardableContent {
 
