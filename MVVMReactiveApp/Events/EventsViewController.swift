@@ -32,7 +32,6 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     @IBOutlet private weak var eventsActivityIndicator: UIActivityIndicatorView!
     @IBOutlet private weak var placeholderLabel: UILabel!
     private lazy var refreshControl = UIRefreshControl()
-    fileprivate lazy var footerLoadMoreView = LoadMoreView()
 
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -69,10 +68,10 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
         artistPhotoImageView.reactive.image <~ viewModel.artistPhoto
         photoActivityIndicator.reactive.isAnimating <~ viewModel.artistPhotoIsLoading
         tableView.reactive.reloadData <~ viewModel.events.map(value: ())
+        tableView.reactive.isShowLoadMoreFooter <~ viewModel.eventsAreLoadingMore
         eventsActivityIndicator.reactive.isAnimating <~ viewModel.eventsAreLoading.take(first: 2)
         refreshControl.reactive.isRefreshing <~ viewModel.eventsAreLoading.skip(first: 2)
         placeholderLabel.reactive.isHidden <~ viewModel.events.signal.map { !$0.isEmpty }
-        reactive.isShowLoadMoreFooter <~ viewModel.eventsAreLoadingMore
     }
 
 }
@@ -102,17 +101,6 @@ extension EventsViewController: UITableViewDelegate {
             return
         }
         viewModel.loadMoreDidTrigger.send(value: ())
-    }
-
-}
-
-// MARK: - Custom Binding Targets
-private extension Reactive where Base: EventsViewController {
-
-    var isShowLoadMoreFooter: BindingTarget<Bool> {
-        return makeBindingTarget { eventsVC, isLoadingMore in
-            eventsVC.tableView.tableFooterView = isLoadingMore ? eventsVC.footerLoadMoreView : UIView()
-        }
     }
 
 }
