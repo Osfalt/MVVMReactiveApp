@@ -13,6 +13,10 @@ extension Artist: PersistentConvertible {
 
     public typealias ManagedObject = ArtistManagedObject
 
+    public var primaryKey: PrimaryKey {
+        return (name: "identifier", value: id)
+    }
+
     public init(managedObject: ManagedObject) {
         guard let name = managedObject.name else {
             preconditionFailure("Artist name must be not nil")
@@ -20,6 +24,13 @@ extension Artist: PersistentConvertible {
 
         let events = managedObject.events?.allObjects as? [Event]
         self.init(id: Int(managedObject.identifier), name: name, events: events)
+    }
+
+    public func inverseRelationshipName<T: PersistentConvertible>(forType type: T.Type) -> String? {
+        if String(describing: type) == String(describing: Event.self) {
+            return "artist"
+        }
+        return nil
     }
 
     public func toManagedObject() -> ManagedObject {

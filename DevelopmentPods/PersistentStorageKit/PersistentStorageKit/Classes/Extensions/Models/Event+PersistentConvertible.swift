@@ -13,6 +13,10 @@ extension Event: PersistentConvertible {
 
     public typealias ManagedObject = EventManagedObject
 
+    public var primaryKey: PrimaryKey {
+        return (name: "identifier", value: id)
+    }
+
     public init(managedObject: ManagedObject) {
         guard let name = managedObject.name,
             let type = managedObject.type,
@@ -34,6 +38,13 @@ extension Event: PersistentConvertible {
                   city: city,
                   popularity: managedObject.popularity,
                   artist: artist)
+    }
+
+    public func inverseRelationshipName<T: PersistentConvertible>(forType type: T.Type) -> String? {
+        if String(describing: type) == String(describing: Artist.self) {
+            return "events"
+        }
+        return nil
     }
 
     public func toManagedObject() -> ManagedObject {

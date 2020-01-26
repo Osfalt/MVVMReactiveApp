@@ -60,19 +60,34 @@ final class CoreDataStorage: PersistentStorage {
         return objects ?? []
     }
 
-    func objects<T: PersistentConvertible>(predicate: NSPredicate) -> [T] {
+    func object<T: PersistentConvertible>(byPrimaryKey key: PrimaryKey) -> T? {
         let entityName = String(describing: T.ManagedObject.self)
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
-        fetchRequest.predicate = predicate
+        fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
+
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let objects = managedObjects?.map(T.init(managedObject:))
+
+        return objects?.first
+    }
+
+    func objects<T: PersistentConvertible, R: PersistentConvertible>(forRelatedObject relatedObject: R) -> [T] {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+
+        guard let relationshipName = relatedObject.inverseRelationshipName(forType: T.self) else {
+            return []
+        }
+
+        fetchRequest.predicate = NSPredicate(
+            format: "\(relationshipName).\(relatedObject.primaryKey.name) == %d",
+            relatedObject.primaryKey.value
+        )
 
         let managedObjects = try? defaultContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
 
         return objects ?? []
-    }
-
-    func object<T: PersistentConvertible>(byPrimaryKey key: AnyHashable) -> T? {
-        return nil // TODO: implement
     }
 
     // MARK: Saving
@@ -96,6 +111,30 @@ final class CoreDataStorage: PersistentStorage {
             let changes = [NSDeletedObjectsKey: objectIDArray]
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [defaultContext])
         }
+
+        saveContext()
+    }
+
+    func delete<T: PersistentConvertible>(objects: [T]) {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+
+        let predicates = objects.map { NSPredicate(format: "\($0.primaryKey.name) == %d", $0.primaryKey.value) }
+        fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        managedObjects?.forEach { defaultContext.delete($0) }
+
+        saveContext()
+    }
+
+    func delete<T: PersistentConvertible>(object: T) {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        fetchRequest.predicate = NSPredicate(format: "\(object.primaryKey.name) == %d", object.primaryKey.value)
+
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        managedObjects?.forEach { defaultContext.delete($0) }
 
         saveContext()
     }
