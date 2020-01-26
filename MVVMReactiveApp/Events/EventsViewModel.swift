@@ -138,14 +138,16 @@ final class EventsViewModel: EventsViewModelProtocol {
             self.startDownloadArtistPhoto()
         }
 
-        loadMoreDidTriggerPipe.output.observeValues { [weak self] in
-            guard let self = self,
-                !self.fetchEvents.isExecuting.value,
-                !self.isLastPage else {
-                    return
+        loadMoreDidTriggerPipe.output
+            .debounce(0.1, on: QueueScheduler.main)
+            .observeValues { [weak self] in
+                guard let self = self,
+                    !self.fetchEvents.isExecuting.value,
+                    !self.isLastPage else {
+                        return
+                }
+                self.startFetchEvents(page: self.page)
             }
-            self.startFetchEvents(page: self.page)
-        }
 
         startDownloadArtistPhoto()
         startFetchEvents(page: page)
