@@ -62,7 +62,7 @@ final class ImageLoader: ImageLoaderProtocol {
                 var loadedImage = UIImage(data: data)
 
                 if let size = size, let image = loadedImage {
-                    loadedImage = self.imageResizer.resizeImage(image, for: size)
+                    loadedImage = self.imageResizer.resizedImage(image, for: size)
                 }
 
                 return (image: loadedImage, sizeInBytes: data.count)

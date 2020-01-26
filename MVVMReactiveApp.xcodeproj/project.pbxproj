@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		31357DC423DD8E6C00706344 /* ImageResizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31357DC323DD8E6C00706344 /* ImageResizerTests.swift */; };
+		31357DD023DD940C00706344 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31357DCF23DD940C00706344 /* Assets.xcassets */; };
+		31357DD323DD95AE00706344 /* Bundle+Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31357DD223DD95AD00706344 /* Bundle+Tests.swift */; };
+		31357DD523DD96E000706344 /* UIImage+InBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31357DD423DD96E000706344 /* UIImage+InBundle.swift */; };
 		3145E63023D32FD100226AE3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145E62F23D32FD100226AE3 /* AppDelegate.swift */; };
 		3145E63423D32FD100226AE3 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3145E63323D32FD100226AE3 /* SearchViewController.swift */; };
 		3145E63723D32FD100226AE3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3145E63523D32FD100226AE3 /* Main.storyboard */; };
@@ -22,11 +26,31 @@
 		31C278CB23DB779900B2D270 /* SearchCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C278CA23DB779900B2D270 /* SearchCellModel.swift */; };
 		31D39C5823DA584A00E0D42E /* EventCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D39C5723DA584A00E0D42E /* EventCellModel.swift */; };
 		31E44AD923D8F640002B046D /* EventsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E44AD823D8F640002B046D /* EventsRouter.swift */; };
+		8DB9763D7D4D0FDEF42BC3ED /* Pods_MVVMReactiveAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A0B6B8C7E4C642D5117EC2A /* Pods_MVVMReactiveAppTests.framework */; };
 		BEF793A0957073242CED8E62 /* Pods_MVVMReactiveApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F8A67E97AB6C2FEABFB83DB /* Pods_MVVMReactiveApp.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		31357DC623DD8E6C00706344 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3145E62423D32FD100226AE3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3145E62B23D32FD100226AE3;
+			remoteInfo = MVVMReactiveApp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		04D20D13DDF3E5D8E8844F6A /* Pods-MVVMReactiveAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveAppTests.debug.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveAppTests/Pods-MVVMReactiveAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2F8A67E97AB6C2FEABFB83DB /* Pods_MVVMReactiveApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MVVMReactiveApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		31357DC123DD8E6C00706344 /* MVVMReactiveAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MVVMReactiveAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		31357DC323DD8E6C00706344 /* ImageResizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResizerTests.swift; sourceTree = "<group>"; };
+		31357DC523DD8E6C00706344 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		31357DCB23DD8EFC00706344 /* CoreKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		31357DCD23DD912500706344 /* CoreKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		31357DCF23DD940C00706344 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		31357DD223DD95AD00706344 /* Bundle+Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Tests.swift"; sourceTree = "<group>"; };
+		31357DD423DD96E000706344 /* UIImage+InBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+InBundle.swift"; sourceTree = "<group>"; };
 		3145E62C23D32FD100226AE3 /* MVVMReactiveApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MVVMReactiveApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3145E62F23D32FD100226AE3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3145E63323D32FD100226AE3 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -45,10 +69,20 @@
 		31D39C5723DA584A00E0D42E /* EventCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCellModel.swift; sourceTree = "<group>"; };
 		31E44AD823D8F640002B046D /* EventsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsRouter.swift; sourceTree = "<group>"; };
 		50E8D9671AE13B156C1F0921 /* Pods-MVVMReactiveApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveApp.debug.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveApp/Pods-MVVMReactiveApp.debug.xcconfig"; sourceTree = "<group>"; };
+		7633EDE770179FC8578789CE /* Pods-MVVMReactiveAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveAppTests.release.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveAppTests/Pods-MVVMReactiveAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		8A0B6B8C7E4C642D5117EC2A /* Pods_MVVMReactiveAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MVVMReactiveAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F63CA39D6FBD26ACF616A26F /* Pods-MVVMReactiveApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MVVMReactiveApp.release.xcconfig"; path = "Target Support Files/Pods-MVVMReactiveApp/Pods-MVVMReactiveApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		31357DBE23DD8E6C00706344 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DB9763D7D4D0FDEF42BC3ED /* Pods_MVVMReactiveAppTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3145E62923D32FD100226AE3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -60,10 +94,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		31357DC223DD8E6C00706344 /* MVVMReactiveAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				31357DD123DD959E00706344 /* Extensions */,
+				31357DC323DD8E6C00706344 /* ImageResizerTests.swift */,
+				31357DC523DD8E6C00706344 /* Info.plist */,
+				31357DCF23DD940C00706344 /* Assets.xcassets */,
+			);
+			path = MVVMReactiveAppTests;
+			sourceTree = "<group>";
+		};
+		31357DD123DD959E00706344 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				31357DD223DD95AD00706344 /* Bundle+Tests.swift */,
+				31357DD423DD96E000706344 /* UIImage+InBundle.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		3145E62323D32FD100226AE3 = {
 			isa = PBXGroup;
 			children = (
 				3145E62E23D32FD100226AE3 /* MVVMReactiveApp */,
+				31357DC223DD8E6C00706344 /* MVVMReactiveAppTests */,
 				3145E62D23D32FD100226AE3 /* Products */,
 				9FD0ADD1B052256EE8C01C16 /* Pods */,
 				6C5A6E2381C40B2D01B146F4 /* Frameworks */,
@@ -74,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				3145E62C23D32FD100226AE3 /* MVVMReactiveApp.app */,
+				31357DC123DD8E6C00706344 /* MVVMReactiveAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,7 +200,10 @@
 		6C5A6E2381C40B2D01B146F4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				31357DCD23DD912500706344 /* CoreKit.framework */,
+				31357DCB23DD8EFC00706344 /* CoreKit.framework */,
 				2F8A67E97AB6C2FEABFB83DB /* Pods_MVVMReactiveApp.framework */,
+				8A0B6B8C7E4C642D5117EC2A /* Pods_MVVMReactiveAppTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -154,6 +213,8 @@
 			children = (
 				50E8D9671AE13B156C1F0921 /* Pods-MVVMReactiveApp.debug.xcconfig */,
 				F63CA39D6FBD26ACF616A26F /* Pods-MVVMReactiveApp.release.xcconfig */,
+				04D20D13DDF3E5D8E8844F6A /* Pods-MVVMReactiveAppTests.debug.xcconfig */,
+				7633EDE770179FC8578789CE /* Pods-MVVMReactiveAppTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -161,6 +222,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		31357DC023DD8E6C00706344 /* MVVMReactiveAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 31357DCA23DD8E6C00706344 /* Build configuration list for PBXNativeTarget "MVVMReactiveAppTests" */;
+			buildPhases = (
+				DFDE85C3840EC8D197C18FD6 /* [CP] Check Pods Manifest.lock */,
+				31357DBD23DD8E6C00706344 /* Sources */,
+				31357DBE23DD8E6C00706344 /* Frameworks */,
+				31357DBF23DD8E6C00706344 /* Resources */,
+				B54D24B14A73C4B68C439FDC /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				31357DC723DD8E6C00706344 /* PBXTargetDependency */,
+			);
+			name = MVVMReactiveAppTests;
+			productName = MVVMReactiveAppTests;
+			productReference = 31357DC123DD8E6C00706344 /* MVVMReactiveAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3145E62B23D32FD100226AE3 /* MVVMReactiveApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3145E64023D32FD300226AE3 /* Build configuration list for PBXNativeTarget "MVVMReactiveApp" */;
@@ -191,6 +272,10 @@
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Andrey Sidorovnin";
 				TargetAttributes = {
+					31357DC023DD8E6C00706344 = {
+						CreatedOnToolsVersion = 11.3;
+						TestTargetID = 3145E62B23D32FD100226AE3;
+					};
 					3145E62B23D32FD100226AE3 = {
 						CreatedOnToolsVersion = 11.3;
 					};
@@ -210,11 +295,20 @@
 			projectRoot = "";
 			targets = (
 				3145E62B23D32FD100226AE3 /* MVVMReactiveApp */,
+				31357DC023DD8E6C00706344 /* MVVMReactiveAppTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		31357DBF23DD8E6C00706344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31357DD023DD940C00706344 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3145E62A23D32FD100226AE3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -285,9 +379,58 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B54D24B14A73C4B68C439FDC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MVVMReactiveAppTests/Pods-MVVMReactiveAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MVVMReactiveAppTests/Pods-MVVMReactiveAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MVVMReactiveAppTests/Pods-MVVMReactiveAppTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DFDE85C3840EC8D197C18FD6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MVVMReactiveAppTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		31357DBD23DD8E6C00706344 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31357DC423DD8E6C00706344 /* ImageResizerTests.swift in Sources */,
+				31357DD523DD96E000706344 /* UIImage+InBundle.swift in Sources */,
+				31357DD323DD95AE00706344 /* Bundle+Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3145E62823D32FD100226AE3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -309,6 +452,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		31357DC723DD8E6C00706344 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3145E62B23D32FD100226AE3 /* MVVMReactiveApp */;
+			targetProxy = 31357DC623DD8E6C00706344 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		3145E63523D32FD100226AE3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -329,6 +480,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		31357DC823DD8E6C00706344 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 04D20D13DDF3E5D8E8844F6A /* Pods-MVVMReactiveAppTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7F87L4L827;
+				INFOPLIST_FILE = MVVMReactiveAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.osfalt.MVVMReactiveAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MVVMReactiveApp.app/MVVMReactiveApp";
+			};
+			name = Debug;
+		};
+		31357DC923DD8E6C00706344 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7633EDE770179FC8578789CE /* Pods-MVVMReactiveAppTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7F87L4L827;
+				INFOPLIST_FILE = MVVMReactiveAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.osfalt.MVVMReactiveAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MVVMReactiveApp.app/MVVMReactiveApp";
+			};
+			name = Release;
+		};
 		3145E63E23D32FD300226AE3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -484,6 +675,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		31357DCA23DD8E6C00706344 /* Build configuration list for PBXNativeTarget "MVVMReactiveAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31357DC823DD8E6C00706344 /* Debug */,
+				31357DC923DD8E6C00706344 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		3145E62723D32FD100226AE3 /* Build configuration list for PBXProject "MVVMReactiveApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

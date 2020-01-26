@@ -13,3 +13,10 @@ target 'MVVMReactiveApp' do
   pod 'ServiceKit', path: 'DevelopmentPods/ServiceKit'
 
 end
+
+target 'MVVMReactiveAppTests' do
+
+  # development pods
+  pod 'CoreKit', path: 'DevelopmentPods/CoreKit'
+
+end
