@@ -12,19 +12,26 @@ final class CoreDataStorage: PersistentStorage {
 
     // MARK: - Constants
     private enum PersistentStore {
-        static let containerName = "MVVMReactiveApp"
+        static let name = "MVVMReactiveApp"
     }
 
-    private enum EntityName {
-        static let movie = "Movie"
-        static let genre = "Genre"
+    // MARK: Internal Properties
+    static let shared = CoreDataStorage()
+
+    var defaultContext: NSManagedObjectContext {
+        return persistentContainer.viewContext
     }
 
     // MARK: - Private Properties
     private lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: PersistentStore.containerName)
+        guard let modelURL = Bundle.persistentStorageKit.url(forResource: PersistentStore.name, withExtension: "momd") else {
+            preconditionFailure("There is no momd file in the bundle")
+        }
+        guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
+            preconditionFailure("Can't load momd file from URL: \(modelURL)")
+        }
+        let container = NSPersistentContainer(name: PersistentStore.name, managedObjectModel: model)
 
-        container.persistentStoreDescriptions.forEach { $0.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey) }
         container.loadPersistentStores { storeDescription, error in
             guard let error = error as NSError? else { return }
             fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -33,44 +40,49 @@ final class CoreDataStorage: PersistentStorage {
         container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         container.viewContext.automaticallyMergesChangesFromParent = true
 
-        do {
-            try container.viewContext.setQueryGenerationFrom(.current)
-        } catch {
-            fatalError("Failed to pin viewContext to the current generation:\(error)")
-        }
-
         return container
     }()
 
-    private var context: NSManagedObjectContext {
-        return persistentContainer.viewContext
-    }
-
     // MARK: - PersistentStorage Protocol
+    // MARK: Configure
     func configure() {
         _ = persistentContainer
     }
 
     // MARK: Fetching
     func objects<T: PersistentConvertible>() -> [T] {
-        return []
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let objects = managedObjects?.map(T.init(object:))
+        return objects ?? []
+    }
+
+    func object<T: PersistentConvertible>(byPrimaryKey key: AnyHashable) -> T? {
+        return nil
     }
 
     // MARK: Saving
-    func save<T: PersistentConvertible>(object: T) throws {
+    func save<T: PersistentConvertible>(object: T) {
+        let managedObject = object.toManagedObject()
+        defaultContext.insert(managedObject)
+    }
+
+    func save<T: PersistentConvertible>(objects: [T]) {
 
     }
 
+    // MARK: Flush
     func flush() {
         saveContext()
     }
 
     // MARK: - Private Methods
     private func saveContext() {
-        guard context.hasChanges else { return }
+        guard defaultContext.hasChanges else { return }
 
         do {
-            try context.save()
+            try defaultContext.save()
         } catch {
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")

@@ -45,7 +45,7 @@ SPEC CHECKSUMS:
   APIKit: 3d2e6d0c6a962b575b3ca5dcf66b6c1e0c794d86
   CoreKit: 4ece129f71cf759ff4b0581bcaf16964743efd6b
   CoreUIKit: 2506553b50971c0019ba1819ba5cffd12865e358
-  PersistentStorageKit: 9d5dd1d6f97fa9eb75b921a642940e43e66a6cad
+  PersistentStorageKit: 95270b6b7ff175917e59cc7b2a72c06f7ca28efd
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204
   ReactiveSwift: 3dc8800378110b13d40b46ab362afa9f6bcffc6c
   ServiceKit: 1eb7f9839d9e340ee4c807cadabbc13e4512b8ef
