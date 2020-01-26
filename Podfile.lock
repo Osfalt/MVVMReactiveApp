@@ -6,6 +6,8 @@ PODS:
     - ReactiveSwift
   - CoreUIKit (0.1.0):
     - ReactiveCocoa
+  - PersistentStorageKit (0.1.0):
+    - CoreKit
   - ReactiveCocoa (10.2.0):
     - ReactiveSwift (~> 6.2)
   - ReactiveSwift (6.2.0)
@@ -18,6 +20,7 @@ DEPENDENCIES:
   - APIKit (from `DevelopmentPods/APIKit`)
   - CoreKit (from `DevelopmentPods/CoreKit`)
   - CoreUIKit (from `DevelopmentPods/CoreUIKit`)
+  - PersistentStorageKit (from `DevelopmentPods/PersistentStorageKit`)
   - ReactiveCocoa (~> 10.2)
   - ServiceKit (from `DevelopmentPods/ServiceKit`)
 
@@ -33,6 +36,8 @@ EXTERNAL SOURCES:
     :path: DevelopmentPods/CoreKit
   CoreUIKit:
     :path: DevelopmentPods/CoreUIKit
+  PersistentStorageKit:
+    :path: DevelopmentPods/PersistentStorageKit
   ServiceKit:
     :path: DevelopmentPods/ServiceKit
 
@@ -40,10 +45,11 @@ SPEC CHECKSUMS:
   APIKit: 3d2e6d0c6a962b575b3ca5dcf66b6c1e0c794d86
   CoreKit: 4ece129f71cf759ff4b0581bcaf16964743efd6b
   CoreUIKit: 2506553b50971c0019ba1819ba5cffd12865e358
+  PersistentStorageKit: 9d5dd1d6f97fa9eb75b921a642940e43e66a6cad
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204
   ReactiveSwift: 3dc8800378110b13d40b46ab362afa9f6bcffc6c
   ServiceKit: 1eb7f9839d9e340ee4c807cadabbc13e4512b8ef
 
-PODFILE CHECKSUM: bb93f87031466e51f53fe802184c5bc986fb4686
+PODFILE CHECKSUM: e322e3f4c6174e14b42823c08be06a1ec1e946b1
 
 COCOAPODS: 1.8.4
