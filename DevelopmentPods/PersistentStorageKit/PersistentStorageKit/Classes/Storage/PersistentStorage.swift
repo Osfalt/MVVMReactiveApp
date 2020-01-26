@@ -12,7 +12,8 @@ public protocol PersistentStorage: AnyObject {
 
     func configure()
 
-    func objects<T: PersistentConvertible>() -> [T]
+    func allObjects<T: PersistentConvertible>() -> [T]
+    func objects<T: PersistentConvertible>(predicate: NSPredicate) -> [T]
     func object<T: PersistentConvertible>(byPrimaryKey key: AnyHashable) -> T?
 
     func save<T: PersistentConvertible>(objects: [T])
@@ -20,7 +21,7 @@ public protocol PersistentStorage: AnyObject {
 
 //    func delete<T: PersistentConvertible>(objects: [T])
 //    func delete<T: PersistentConvertible>(object: T)
-//    func deleteAll<T: PersistentConvertible>(ofType type: T.Type)
+    func deleteAll<T: PersistentConvertible>(ofType type: T.Type)
 
     /// Uses only for Core Data. Should use instead of saveContext()
     func flush()

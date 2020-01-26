@@ -50,26 +50,54 @@ final class CoreDataStorage: PersistentStorage {
     }
 
     // MARK: Fetching
-    func objects<T: PersistentConvertible>() -> [T] {
+    func allObjects<T: PersistentConvertible>() -> [T] {
         let entityName = String(describing: T.ManagedObject.self)
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+
         let managedObjects = try? defaultContext.fetch(fetchRequest)
-        let objects = managedObjects?.map(T.init(object:))
+        let objects = managedObjects?.map(T.init(managedObject:))
+
+        return objects ?? []
+    }
+
+    func objects<T: PersistentConvertible>(predicate: NSPredicate) -> [T] {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        fetchRequest.predicate = predicate
+
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let objects = managedObjects?.map(T.init(managedObject:))
+
         return objects ?? []
     }
 
     func object<T: PersistentConvertible>(byPrimaryKey key: AnyHashable) -> T? {
-        return nil
+        return nil // TODO: implement
     }
 
     // MARK: Saving
     func save<T: PersistentConvertible>(object: T) {
-        let managedObject = object.toManagedObject()
-        defaultContext.insert(managedObject)
+        defaultContext.insert(object.toManagedObject())
     }
 
     func save<T: PersistentConvertible>(objects: [T]) {
+        objects.forEach { defaultContext.insert($0.toManagedObject()) } // todo batch insert
+    }
 
+    // MARK: Deleting
+    func deleteAll<T: PersistentConvertible>(ofType type: T.Type) {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        deleteRequest.resultType = .resultTypeObjectIDs
+        let result = try? defaultContext.execute(deleteRequest) as? NSBatchDeleteResult
+
+        if let objectIDArray = result?.result as? [NSManagedObjectID] {
+            let changes = [NSDeletedObjectsKey: objectIDArray]
+            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [defaultContext])
+        }
+
+        saveContext()
     }
 
     // MARK: Flush

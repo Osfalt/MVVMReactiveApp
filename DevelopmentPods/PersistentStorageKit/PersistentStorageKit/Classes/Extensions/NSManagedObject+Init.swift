@@ -15,7 +15,7 @@ extension NSManagedObject {
         guard let entity = NSEntityDescription.entity(forEntityName: entityName, in: context) else {
             preconditionFailure("Can't initialize entity with name \(entityName) in context \(context)")
         }
-        return Self(entity: entity, insertInto: nil)
+        return Self(entity: entity, insertInto: context)
     }
 
 }

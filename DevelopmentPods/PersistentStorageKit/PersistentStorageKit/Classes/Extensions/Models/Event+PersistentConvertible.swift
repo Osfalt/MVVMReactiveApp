@@ -13,21 +13,27 @@ extension Event: PersistentConvertible {
 
     public typealias ManagedObject = EventManagedObject
 
-    public init(object: ManagedObject) {
-        guard let name = object.name,
-            let type = object.type,
-            let date = object.date,
-            let city = object.city else
+    public init(managedObject: ManagedObject) {
+        guard let name = managedObject.name,
+            let type = managedObject.type,
+            let date = managedObject.date,
+            let city = managedObject.city else
         {
             preconditionFailure("All Event's properties must be not nil")
         }
 
-        self.init(id: Int(object.identifier),
+        var artist: Artist?
+        if let managedArtist = managedObject.artist {
+            artist = Artist(managedObject: managedArtist)
+        }
+
+        self.init(id: Int(managedObject.identifier),
                   name: name,
                   type: type,
                   date: date,
                   city: city,
-                  popularity: object.popularity)
+                  popularity: managedObject.popularity,
+                  artist: artist)
     }
 
     public func toManagedObject() -> ManagedObject {
@@ -38,6 +44,8 @@ extension Event: PersistentConvertible {
         eventManagedObject.date = date
         eventManagedObject.city = city
         eventManagedObject.popularity = popularity
+        eventManagedObject.artist = artist?.toManagedObject()
+
         return eventManagedObject
     }
 

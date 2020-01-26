@@ -12,7 +12,7 @@ public protocol PersistentConvertible {
 
     associatedtype ManagedObject: NSManagedObject
 
-    init(object: ManagedObject)
+    init(managedObject: ManagedObject)
 
     func toManagedObject() -> ManagedObject
 
