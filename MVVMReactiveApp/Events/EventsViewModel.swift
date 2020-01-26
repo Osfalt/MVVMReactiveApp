@@ -135,6 +135,7 @@ final class EventsViewModel: EventsViewModelProtocol {
             self.page = Constant.firstPage
             self.isLastPage = false
             self.startFetchEvents(page: self.page)
+            self.startDownloadArtistPhoto()
         }
 
         loadMoreDidTriggerPipe.output.observeValues { [weak self] in
