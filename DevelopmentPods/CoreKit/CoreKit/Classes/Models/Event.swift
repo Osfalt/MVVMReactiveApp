@@ -15,17 +15,16 @@ public struct Event {
     public let date: Date
     public let city: String
     public let popularity: Double
+    public var artistID: Int?
 
-    public var artist: Artist?
-
-    public init(id: Int, name: String, type: String, date: Date, city: String, popularity: Double, artist: Artist? = nil) {
+    public init(id: Int, name: String, type: String, date: Date, city: String, popularity: Double, artistID: Int? = nil) {
         self.id = id
         self.name = name
         self.type = type
         self.date = date
         self.city = city
         self.popularity = popularity
-        self.artist = artist
+        self.artistID = artistID
     }
 
 }

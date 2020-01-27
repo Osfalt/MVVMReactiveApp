@@ -89,7 +89,7 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private lazy var fetchEvents = Action<FetchParams, [Event], Error> { [weak self] artistID, page in
         guard let self = self else { return .empty }
-        return self.eventsService
+        return self.eventsRepository
             .pastEvents(forArtistID: artistID, ascending: false, page: page, perPage: Constant.defaultPerPage)
             .observe(on: UIScheduler())
     }
@@ -103,7 +103,7 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     private let router: EventsRouterProtocol
-    private let eventsService: EventsServiceProtocol
+    private let eventsRepository: EventsRepositoryProtocol
     private let imageLoader: ImageLoaderProtocol
 
     private var page = Constant.firstPage
@@ -117,12 +117,12 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     // MARK: - Init
     init(router: EventsRouterProtocol,
-         eventsService: EventsServiceProtocol,
+         eventsRepository: EventsRepositoryProtocol,
          imageLoader: ImageLoaderProtocol,
          artist: Artist)
     {
         self.router = router
-        self.eventsService = eventsService
+        self.eventsRepository = eventsRepository
         self.imageLoader = imageLoader
         self.artistProperty = Property(value: artist)
         setupModelsMapping()
@@ -172,9 +172,7 @@ final class EventsViewModel: EventsViewModelProtocol {
             .apply(artistProperty.value.avatarURL())
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
-            .startWithFailed { [weak self] error in
-                self?.router.show(error: error)
-            }
+            .start()
     }
 
     private func startFetchEvents(page: Int) {

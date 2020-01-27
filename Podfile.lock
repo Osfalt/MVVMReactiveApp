@@ -14,6 +14,7 @@ PODS:
   - ServiceKit (0.1.0):
     - APIKit
     - CoreKit
+    - PersistentStorageKit
     - ReactiveSwift
 
 DEPENDENCIES:
@@ -48,7 +49,7 @@ SPEC CHECKSUMS:
   PersistentStorageKit: 95270b6b7ff175917e59cc7b2a72c06f7ca28efd
   ReactiveCocoa: a123c42f449c552460a4ee217dd49c76a17c8204
   ReactiveSwift: 3dc8800378110b13d40b46ab362afa9f6bcffc6c
-  ServiceKit: 1eb7f9839d9e340ee4c807cadabbc13e4512b8ef
+  ServiceKit: 87061a32a1a44fb0812727f1b86c987eb096ce9e
 
 PODFILE CHECKSUM: e322e3f4c6174e14b42823c08be06a1ec1e946b1
 

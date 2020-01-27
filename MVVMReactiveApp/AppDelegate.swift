@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PersistentStorageKit
 
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,17 +16,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     private lazy var dependenciesContainer: DependenciesContainer = DefaultDependenciesContainer()
+    private lazy var storage = dependenciesContainer.storage
 
     // MARK: - Internal Methods
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        storage.configure()
         setupRootViewController()
         return true
     }
 
+    func applicationWillTerminate(_ application: UIApplication) {
+        storage.flush()
+    }
+
     // MARK: - Private Methods
     private func setupRootViewController() {
-        let eventsModuleDependencies = EventsModuleDependencies(eventsService: dependenciesContainer.eventsService,
+        let eventsModuleDependencies = EventsModuleDependencies(eventsRepository: dependenciesContainer.eventsRepository,
                                                                 imageLoader: dependenciesContainer.imageLoader)
 
         let searchModuleDependencies = SearchModuleDependencies(searchService: dependenciesContainer.searchService,

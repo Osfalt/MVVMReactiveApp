@@ -2,7 +2,7 @@
 //  EventManagedObject+CoreDataClass.swift
 //  
 //
-//  Created by Dre on 26.01.2020.
+//  Created by Dre on 27.01.2020.
 //
 //
 

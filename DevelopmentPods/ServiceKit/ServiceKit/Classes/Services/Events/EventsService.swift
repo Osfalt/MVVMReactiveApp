@@ -13,9 +13,9 @@ import APIKit
 // MARK: - Protocol
 public protocol EventsServiceProtocol: AnyObject {
 
-    func upcomingEvents(forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
+    func upcomingEvents(forArtistID artistID: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
 
-    func pastEvents(forArtistID id: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
+    func pastEvents(forArtistID artistID: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
 
 }
 
@@ -35,13 +35,20 @@ final class EventsService: EventsServiceProtocol {
     }
 
     // MARK: - Internal Methods
-    func upcomingEvents(forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
-        let requestInfo = EventsRequestInfo.upcoming(artistID: id, page: page, perPage: perPage)
+    func upcomingEvents(forArtistID artistID: Int,
+                        page: Int,
+                        perPage: Int) -> SignalProducer<[Event], Error>
+    {
+        let requestInfo = EventsRequestInfo.upcoming(artistID: artistID, page: page, perPage: perPage)
         return events(requestInfo: requestInfo)
     }
 
-    func pastEvents(forArtistID id: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
-        let requestInfo = EventsRequestInfo.past(artistID: id, ascending: ascending, page: page, perPage: perPage)
+    func pastEvents(forArtistID artistID: Int,
+                    ascending: Bool,
+                    page: Int,
+                    perPage: Int) -> SignalProducer<[Event], Error>
+    {
+        let requestInfo = EventsRequestInfo.past(artistID: artistID, ascending: ascending, page: page, perPage: perPage)
         return events(requestInfo: requestInfo)
     }
 

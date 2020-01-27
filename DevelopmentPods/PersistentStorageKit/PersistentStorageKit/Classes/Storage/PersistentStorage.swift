@@ -12,20 +12,18 @@ public protocol PersistentStorage: AnyObject {
 
     func configure()
 
+    func object<T: PersistentConvertible>(byPrimaryKey key: StorageKey) -> T?
+    func objects<T: PersistentConvertible>(byKey key: StorageKey, sorting: NSSortDescriptor...) -> [T]
     func allObjects<T: PersistentConvertible>(sorting: NSSortDescriptor...) -> [T]
-    func object<T: PersistentConvertible>(byPrimaryKey key: PrimaryKey) -> T?
 
-    func objects<T, R>(forRelatedObject relatedObject: R, sorting: NSSortDescriptor...) -> [T]
-        where T: PersistentConvertible, R: PersistentConvertible
-
-    func save<T: PersistentConvertible>(objects: [T])
     func save<T: PersistentConvertible>(object: T)
+    func save<T: PersistentConvertible>(objects: [T])
 
-    func delete<T: PersistentConvertible>(objects: [T])
     func delete<T: PersistentConvertible>(object: T)
+    func delete<T: PersistentConvertible>(objects: [T])
     func deleteAll<T: PersistentConvertible>(ofType type: T.Type)
 
-    /// Uses only for Core Data. Should use instead of saveContext()
+    /// Uses only for Core Data storage implementation. Should use instead of saveContext().
     func flush()
 
 }

@@ -13,11 +13,11 @@ import ServiceKit
 // MARK: - Dependencies
 final class EventsModuleDependencies {
 
-    let eventsService: EventsServiceProtocol
+    let eventsRepository: EventsRepositoryProtocol
     let imageLoader: ImageLoaderProtocol
 
-    init(eventsService: EventsServiceProtocol, imageLoader: ImageLoaderProtocol) {
-        self.eventsService = eventsService
+    init(eventsRepository: EventsRepositoryProtocol, imageLoader: ImageLoaderProtocol) {
+        self.eventsRepository = eventsRepository
         self.imageLoader = imageLoader
     }
 
@@ -38,7 +38,7 @@ final class EventsModuleBuilder {
         let viewController = EventsViewController.make()
         let router = EventsRouter(viewController: viewController)
         let viewModel = EventsViewModel(router: router,
-                                        eventsService: dependencies.eventsService,
+                                        eventsRepository: dependencies.eventsRepository,
                                         imageLoader: dependencies.imageLoader,
                                         artist: artist)
         viewController.setupViewModel(viewModel)

@@ -2,7 +2,7 @@
 //  EventManagedObject+CoreDataProperties.swift
 //  
 //
-//  Created by Dre on 26.01.2020.
+//  Created by Dre on 27.01.2020.
 //
 //
 
@@ -21,6 +21,7 @@ extension EventManagedObject {
     @NSManaged public var name: String?
     @NSManaged public var popularity: Double
     @NSManaged public var type: String?
-    @NSManaged public var artist: ArtistManagedObject?
+    @NSManaged public var artistIdentifier: NSNumber?
+    @NSManaged public var artist: NSManagedObject?
 
 }

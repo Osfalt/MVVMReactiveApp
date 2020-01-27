@@ -13,8 +13,18 @@ extension Event: PersistentConvertible {
 
     public typealias ManagedObject = EventManagedObject
 
-    public var primaryKey: PrimaryKey {
-        return (name: "identifier", value: id)
+    public enum Field {
+        public static let id = "identifier"
+        public static let name = "name"
+        public static let city = "city"
+        public static let date = "date"
+        public static let popularity = "popularity"
+        public static let type = "type"
+        public static let artistID = "artistIdentifier"
+    }
+
+    public var primaryKey: StorageKey {
+        return .init(name: Field.id, value: id)
     }
 
     public init(managedObject: ManagedObject) {
@@ -26,28 +36,13 @@ extension Event: PersistentConvertible {
             preconditionFailure("All Event's properties must be not nil")
         }
 
-        var artist: Artist?
-        if let managedArtist = managedObject.artist {
-            artist = Artist(managedObject: managedArtist)
-        }
-
         self.init(id: Int(managedObject.identifier),
                   name: name,
                   type: type,
                   date: date,
                   city: city,
                   popularity: managedObject.popularity,
-                  artist: artist)
-    }
-
-    public func inverseRelationshipName<T: PersistentConvertible>(forType type: T.Type) -> String? {
-        switch String(describing: type) {
-        case String(describing: Artist.self):
-            return "events"
-
-        default:
-            return nil
-        }
+                  artistID: managedObject.artistIdentifier?.intValue)
     }
 
     public func toManagedObject() -> ManagedObject {
@@ -58,7 +53,7 @@ extension Event: PersistentConvertible {
         eventManagedObject.date = date
         eventManagedObject.city = city
         eventManagedObject.popularity = popularity
-        eventManagedObject.artist = artist?.toManagedObject()
+        eventManagedObject.artistIdentifier = artistID.map { NSNumber(value: $0) }
 
         return eventManagedObject
     }

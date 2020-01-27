@@ -16,5 +16,6 @@ Pod::Spec.new do |s|
   s.dependency 'ReactiveSwift'
   s.dependency 'CoreKit'
   s.dependency 'APIKit'
+  s.dependency 'PersistentStorageKit'
 
 end

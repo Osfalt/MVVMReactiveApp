@@ -12,12 +12,9 @@ public struct Artist {
     public let id: Int
     public let name: String
 
-    public var events: [Event]?
-
-    public init(id: Int, name: String, events: [Event]? = nil) {
+    public init(id: Int, name: String) {
         self.id = id
         self.name = name
-        self.events = events
     }
 
 }
