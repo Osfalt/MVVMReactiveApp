@@ -40,25 +40,22 @@ final class EventsRepository: EventsRepositoryProtocol {
         let fetchRemoteEvents = eventsService.pastEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
 
         return fetchRemoteEvents
-            .on(value: { [weak self] events in
-                let events = events.map {
-                    Event(id: $0.id,
-                          name: $0.name,
-                          type: $0.type,
-                          date: $0.date,
-                          city: $0.city,
-                          popularity: $0.popularity,
-                          artistID: artistID)
-                }
+            .on(value: { [weak self] loadedEvents in
+                let events = loadedEvents.map { Event(from: $0, artistID: artistID) }
                 self?.storage.save(objects: events)
             })
             .flatMapError { [weak self] error -> SignalProducer<[Event], Error> in
                 guard let self = self else { return .empty }
-                if error.isNotConnectedToInternet {
-                    return self.fetchSavedEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
-                        .promoteError(Error.self)
+                guard error.isNotConnectedToInternet else {
+                    return SignalProducer(error: error)
                 }
-                return SignalProducer(error: error)
+
+                return self.fetchSavedEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
+                    .flatMap(.latest) { savedEvents -> SignalProducer<[Event], Error> in
+                        savedEvents.isEmpty
+                            ? SignalProducer(error: error)
+                            : SignalProducer(value: savedEvents)
+                    }
             }
     }
 
@@ -79,6 +76,21 @@ final class EventsRepository: EventsRepositoryProtocol {
 
         return fetchSavedEvents
             .start(on: QueueScheduler(qos: .userInitiated))
+    }
+
+}
+
+// MARK: - Private Extensions
+private extension Event {
+
+    init(from event: Event, artistID: Int) {
+        self.init(id: event.id,
+                  name: event.name,
+                  type: event.type,
+                  date: event.date,
+                  city: event.city,
+                  popularity: event.popularity,
+                  artistID: artistID)
     }
 
 }
