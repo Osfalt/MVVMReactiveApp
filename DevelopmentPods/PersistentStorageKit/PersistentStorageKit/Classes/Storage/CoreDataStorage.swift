@@ -73,6 +73,24 @@ final class CoreDataStorage: PersistentStorage {
         return objects ?? []
     }
 
+    func objects<T: PersistentConvertible>(byKey key: StorageKey,
+                                           offset: Int,
+                                           limit: Int,
+                                           sorting: NSSortDescriptor...) -> [T]
+    {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
+        fetchRequest.sortDescriptors = sorting
+        fetchRequest.fetchOffset = offset
+        fetchRequest.fetchLimit = limit
+
+        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let objects = managedObjects?.map(T.init(managedObject:))
+
+        return objects ?? []
+    }
+
     func allObjects<T: PersistentConvertible>(sorting: NSSortDescriptor...) -> [T] {
         let entityName = String(describing: T.ManagedObject.self)
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
@@ -87,10 +105,12 @@ final class CoreDataStorage: PersistentStorage {
     // MARK: Saving
     func save<T: PersistentConvertible>(object: T) {
         defaultContext.insert(object.toManagedObject())
+        saveContext()
     }
 
     func save<T: PersistentConvertible>(objects: [T]) {
-        objects.forEach { defaultContext.insert($0.toManagedObject()) } // todo batch insert
+        objects.forEach { defaultContext.insert($0.toManagedObject()) }
+        saveContext()
     }
 
     // MARK: Deleting

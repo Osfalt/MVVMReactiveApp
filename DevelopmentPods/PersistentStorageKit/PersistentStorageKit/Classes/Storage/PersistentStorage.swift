@@ -13,7 +13,14 @@ public protocol PersistentStorage: AnyObject {
     func configure()
 
     func object<T: PersistentConvertible>(byPrimaryKey key: StorageKey) -> T?
+
     func objects<T: PersistentConvertible>(byKey key: StorageKey, sorting: NSSortDescriptor...) -> [T]
+
+    func objects<T: PersistentConvertible>(byKey key: StorageKey,
+                                           offset: Int,
+                                           limit: Int,
+                                           sorting: NSSortDescriptor...) -> [T]
+
     func allObjects<T: PersistentConvertible>(sorting: NSSortDescriptor...) -> [T]
 
     func save<T: PersistentConvertible>(object: T)

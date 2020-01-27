@@ -55,7 +55,7 @@ final class EventsRepository: EventsRepositoryProtocol {
             .flatMapError { [weak self] error -> SignalProducer<[Event], Error> in
                 guard let self = self else { return .empty }
                 if error.isNotConnectedToInternet {
-                    return self.fetchSavedEvents(forArtistID: artistID)
+                    return self.fetchSavedEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
                         .promoteError(Error.self)
                 }
                 return SignalProducer(error: error)
@@ -63,13 +63,18 @@ final class EventsRepository: EventsRepositoryProtocol {
     }
 
     // MARK: - Private Methods
-    private func fetchSavedEvents(forArtistID artistID: Int) -> SignalProducer<[Event], Never> {
+    private func fetchSavedEvents(forArtistID artistID: Int,
+                                  ascending: Bool,
+                                  page: Int,
+                                  perPage: Int) -> SignalProducer<[Event], Never>
+    {
         let fetchSavedEvents = SignalProducer<[Event], Never> { [weak self] () -> [Event] in
             guard let self = self else { return [] }
             let artistKey = StorageKey(name: Event.Field.artistID, value: artistID)
-            let sort = NSSortDescriptor(key: Event.Field.date, ascending: false)
+            let sort = NSSortDescriptor(key: Event.Field.date, ascending: ascending)
+            let offset = (page - 1) * perPage
 
-            return self.storage.objects(byKey: artistKey, sorting: sort)
+            return self.storage.objects(byKey: artistKey, offset: offset, limit: perPage, sorting: sort)
         }
 
         return fetchSavedEvents
