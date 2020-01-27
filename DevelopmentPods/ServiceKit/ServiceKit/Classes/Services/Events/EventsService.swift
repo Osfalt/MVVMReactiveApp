@@ -22,57 +22,43 @@ public protocol EventsServiceProtocol: AnyObject {
 // MARK: - Implementation
 final class EventsService: EventsServiceProtocol {
 
-    // MARK: - Private Types
-    private enum EventType {
-        case upcoming
-        case past(ascending: Bool)
-    }
-
     // MARK: - Private Properties
     private let httpClient: HTTPClient
+    private let requestBuilder: URLRequestBuilderProtocol
 
     // MARK: - Init
-    init(httpClient: HTTPClient) {
+    init(httpClient: HTTPClient,
+         requestBuilder: URLRequestBuilderProtocol = DefaultURLRequestBuilder())
+    {
         self.httpClient = httpClient
+        self.requestBuilder = requestBuilder
     }
 
     // MARK: - Internal Methods
     func upcomingEvents(forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
-        return events(type: .upcoming, forArtistID: id, page: page, perPage: perPage)
+        let requestInfo = EventsRequestInfo.upcoming(artistID: id, page: page, perPage: perPage)
+        return events(requestInfo: requestInfo)
     }
 
     func pastEvents(forArtistID id: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
-        return events(type: .past(ascending: ascending), forArtistID: id, page: page, perPage: perPage)
+        let requestInfo = EventsRequestInfo.past(artistID: id, ascending: ascending, page: page, perPage: perPage)
+        return events(requestInfo: requestInfo)
     }
 
     // MARK: - Private Methods
-    private func events(type: EventType, forArtistID id: Int, page: Int, perPage: Int) -> SignalProducer<[Event], Error> {
-        guard let url = eventsURL(type: type, forArtistID: id, page: page, perPage: perPage) else {
-            return .init(error: URLError(.badURL))
-        }
+    private func events(requestInfo: EventsRequestInfo) -> SignalProducer<[Event], Error> {
+        let request = requestBuilder.request(with: requestInfo)
+        let mapper = CollectionResponseMapper<Event>()
 
         return httpClient
-            .requestData(URLRequest(url: url))
+            .requestData(request)
             .attemptMap { (data, response) -> CollectionResponse<Event> in
-                try JSONDecoder().decode(CollectionResponse<Event>.self, from: data)
+                try mapper.map(from: data)
             }
             .flatMap(.latest) { collectionResponse -> SignalProducer<[Event], Error> in
                 let events = collectionResponse.results
                 return .init(value: events)
             }
-    }
-
-    private func eventsURL(type: EventType, forArtistID id: Int, page: Int, perPage: Int) -> URL? {
-        switch type {
-        case .upcoming:
-            return URLBuilder.upcomingEvents(artistID: id).url
-
-        case .past(let ascending):
-            return URLBuilder.pastEvents(artistID: id,
-                                         ascending: ascending,
-                                         page: page,
-                                         perPage: perPage).url
-        }
     }
 
 }

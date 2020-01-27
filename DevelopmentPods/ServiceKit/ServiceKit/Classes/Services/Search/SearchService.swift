@@ -22,10 +22,14 @@ final class SearchService: SearchServiceProtocol {
 
     // MARK: - Private Properties
     private let httpClient: HTTPClient
+    private let requestBuilder: URLRequestBuilderProtocol
 
     // MARK: - Init
-    init(httpClient: HTTPClient) {
+    init(httpClient: HTTPClient,
+         requestBuilder: URLRequestBuilderProtocol = DefaultURLRequestBuilder())
+    {
         self.httpClient = httpClient
+        self.requestBuilder = requestBuilder
     }
 
     // MARK: - Internal Methods
@@ -34,14 +38,14 @@ final class SearchService: SearchServiceProtocol {
             return .init(value: [])
         }
 
-        guard let url = URLBuilder.searchArtists(query: query).url else {
-            return .init(error: URLError(.badURL))
-        }
+        let requestInfo = SearchRequestInfo.artists(query: query)
+        let request = requestBuilder.request(with: requestInfo)
+        let mapper = CollectionResponseMapper<Artist>()
 
         return httpClient
-            .requestData(URLRequest(url: url))
+            .requestData(request)
             .attemptMap { (data, response) -> CollectionResponse<Artist> in
-                return try JSONDecoder().decode(CollectionResponse<Artist>.self, from: data)
+                try mapper.map(from: data)
             }
             .flatMap(.latest) { collectionResponse -> SignalProducer<[Artist], Error> in
                 let artists = collectionResponse.results

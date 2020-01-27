@@ -12,6 +12,7 @@ public enum HTTPError: Error, Equatable {
     public typealias Message = String
 
     case unauthorized
+    case forbidden
     case notFound
     case serverError
     case serviceUnavailable
@@ -21,6 +22,9 @@ public enum HTTPError: Error, Equatable {
         switch code {
         case 401:
             return .unauthorized
+
+        case 403:
+            return .forbidden
 
         case 404:
             return .notFound
@@ -44,6 +48,9 @@ extension HTTPError: LocalizedError {
         switch self {
         case .unauthorized:
             return "Unauthorized"
+
+        case .forbidden:
+            return "Access is forbidden"
 
         case .notFound:
             return "Resource Not Found"
