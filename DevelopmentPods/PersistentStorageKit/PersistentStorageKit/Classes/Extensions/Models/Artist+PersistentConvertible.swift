@@ -27,10 +27,13 @@ extension Artist: PersistentConvertible {
     }
 
     public func inverseRelationshipName<T: PersistentConvertible>(forType type: T.Type) -> String? {
-        if String(describing: type) == String(describing: Event.self) {
+        switch String(describing: type) {
+        case String(describing: Event.self):
             return "artist"
+
+        default:
+            return nil
         }
-        return nil
     }
 
     public func toManagedObject() -> ManagedObject {

@@ -50,9 +50,10 @@ final class CoreDataStorage: PersistentStorage {
     }
 
     // MARK: Fetching
-    func allObjects<T: PersistentConvertible>() -> [T] {
+    func allObjects<T: PersistentConvertible>(sorting: NSSortDescriptor...) -> [T] {
         let entityName = String(describing: T.ManagedObject.self)
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        fetchRequest.sortDescriptors = sorting
 
         let managedObjects = try? defaultContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
@@ -71,9 +72,12 @@ final class CoreDataStorage: PersistentStorage {
         return objects?.first
     }
 
-    func objects<T: PersistentConvertible, R: PersistentConvertible>(forRelatedObject relatedObject: R) -> [T] {
+    func objects<T, R>(forRelatedObject relatedObject: R, sorting: NSSortDescriptor...) -> [T]
+        where T: PersistentConvertible, R: PersistentConvertible
+    {
         let entityName = String(describing: T.ManagedObject.self)
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        fetchRequest.sortDescriptors = sorting
 
         guard let relationshipName = relatedObject.inverseRelationshipName(forType: T.self) else {
             return []

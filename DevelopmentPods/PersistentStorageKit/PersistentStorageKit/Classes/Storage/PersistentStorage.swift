@@ -12,9 +12,11 @@ public protocol PersistentStorage: AnyObject {
 
     func configure()
 
-    func allObjects<T: PersistentConvertible>() -> [T]
+    func allObjects<T: PersistentConvertible>(sorting: NSSortDescriptor...) -> [T]
     func object<T: PersistentConvertible>(byPrimaryKey key: PrimaryKey) -> T?
-    func objects<T: PersistentConvertible, R: PersistentConvertible>(forRelatedObject relatedObject: R) -> [T]
+
+    func objects<T, R>(forRelatedObject relatedObject: R, sorting: NSSortDescriptor...) -> [T]
+        where T: PersistentConvertible, R: PersistentConvertible
 
     func save<T: PersistentConvertible>(objects: [T])
     func save<T: PersistentConvertible>(object: T)
