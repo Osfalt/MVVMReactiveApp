@@ -31,6 +31,7 @@ public final class DefaultURLRequestBuilder: URLRequestBuilderProtocol {
 
         var request = URLRequest(url: url)
         request.httpMethod = info.httpMethod.rawValue
+        request.allHTTPHeaderFields = info.headers
 
         if info.httpMethod == .post {
             request.httpBody = info.httpBody
