@@ -39,8 +39,10 @@ final class EventsRepository: EventsRepositoryProtocol {
                     page: Int,
                     perPage: Int) -> SignalProducer<EventsResult, Error>
     {
-        let fetchRemoteEvents = eventsService.pastEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
-
+        let fetchRemoteEvents = eventsService.pastEvents(forArtistID: artistID,
+                                                         ascending: ascending,
+                                                         page: page,
+                                                         perPage: perPage)
         return fetchRemoteEvents
             .on(value: { [weak self] loadedEvents in
                 let events = loadedEvents.map { Event(from: $0, artistID: artistID) }

@@ -23,6 +23,9 @@
 		3162457A23D79A7D00128A9B /* EventsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3162457923D79A7D00128A9B /* EventsViewController.swift */; };
 		3162457C23D79A9C00128A9B /* EventsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3162457B23D79A9C00128A9B /* EventsViewModel.swift */; };
 		3162457E23D79ADA00128A9B /* EventsModuleBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3162457D23D79ADA00128A9B /* EventsModuleBuilder.swift */; };
+		316F8FCB23E0C60A00C4F16A /* EventsRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316F8FCA23E0C60A00C4F16A /* EventsRepositoryTests.swift */; };
+		316F8FCE23E0CD2800C4F16A /* EventsStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316F8FCD23E0CD2800C4F16A /* EventsStorageMock.swift */; };
+		316F8FD023E0CD3300C4F16A /* EventsServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316F8FCF23E0CD3300C4F16A /* EventsServiceMock.swift */; };
 		31C278CB23DB779900B2D270 /* SearchCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C278CA23DB779900B2D270 /* SearchCellModel.swift */; };
 		31D39C5823DA584A00E0D42E /* EventCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31D39C5723DA584A00E0D42E /* EventCellModel.swift */; };
 		31E44AD923D8F640002B046D /* EventsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E44AD823D8F640002B046D /* EventsRouter.swift */; };
@@ -65,6 +68,9 @@
 		3162457923D79A7D00128A9B /* EventsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewController.swift; sourceTree = "<group>"; };
 		3162457B23D79A9C00128A9B /* EventsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewModel.swift; sourceTree = "<group>"; };
 		3162457D23D79ADA00128A9B /* EventsModuleBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsModuleBuilder.swift; sourceTree = "<group>"; };
+		316F8FCA23E0C60A00C4F16A /* EventsRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsRepositoryTests.swift; sourceTree = "<group>"; };
+		316F8FCD23E0CD2800C4F16A /* EventsStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsStorageMock.swift; sourceTree = "<group>"; };
+		316F8FCF23E0CD3300C4F16A /* EventsServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsServiceMock.swift; sourceTree = "<group>"; };
 		31C278CA23DB779900B2D270 /* SearchCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCellModel.swift; sourceTree = "<group>"; };
 		31D39C5723DA584A00E0D42E /* EventCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCellModel.swift; sourceTree = "<group>"; };
 		31E44AD823D8F640002B046D /* EventsRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsRouter.swift; sourceTree = "<group>"; };
@@ -98,9 +104,11 @@
 			isa = PBXGroup;
 			children = (
 				31357DD123DD959E00706344 /* Extensions */,
+				316F8FCC23E0CD1000C4F16A /* Mocks */,
 				31357DC323DD8E6C00706344 /* ImageResizerTests.swift */,
-				31357DC523DD8E6C00706344 /* Info.plist */,
+				316F8FCA23E0C60A00C4F16A /* EventsRepositoryTests.swift */,
 				31357DCF23DD940C00706344 /* Assets.xcassets */,
+				31357DC523DD8E6C00706344 /* Info.plist */,
 			);
 			path = MVVMReactiveAppTests;
 			sourceTree = "<group>";
@@ -179,6 +187,15 @@
 				31E44AD823D8F640002B046D /* EventsRouter.swift */,
 			);
 			path = Events;
+			sourceTree = "<group>";
+		};
+		316F8FCC23E0CD1000C4F16A /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				316F8FCD23E0CD2800C4F16A /* EventsStorageMock.swift */,
+				316F8FCF23E0CD3300C4F16A /* EventsServiceMock.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 		31C278C923DB778900B2D270 /* PresentationModels */ = {
@@ -427,6 +444,9 @@
 			files = (
 				31357DC423DD8E6C00706344 /* ImageResizerTests.swift in Sources */,
 				31357DD523DD96E000706344 /* UIImage+InBundle.swift in Sources */,
+				316F8FD023E0CD3300C4F16A /* EventsServiceMock.swift in Sources */,
+				316F8FCB23E0C60A00C4F16A /* EventsRepositoryTests.swift in Sources */,
+				316F8FCE23E0CD2800C4F16A /* EventsStorageMock.swift in Sources */,
 				31357DD323DD95AE00706344 /* Bundle+Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
