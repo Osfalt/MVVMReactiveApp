@@ -102,9 +102,8 @@ final class EventsViewModel: EventsViewModelProtocol {
             .observe(on: UIScheduler())
     }
 
-    private let router: EventsRouterProtocol
-    private let eventsRepository: EventsRepositoryProtocol
-    private let imageLoader: ImageLoaderProtocol
+    private var fetchEventsDisposable: Disposable?
+    private var downloadArtistPhotoDisposable: Disposable?
 
     private var page = Constant.firstPage
     private var isLastPage = false
@@ -115,7 +114,12 @@ final class EventsViewModel: EventsViewModelProtocol {
         return formatter
     }()
 
-    // MARK: - Init
+    // MARK: Dependencies
+    private let router: EventsRouterProtocol
+    private let eventsRepository: EventsRepositoryProtocol
+    private let imageLoader: ImageLoaderProtocol
+
+    // MARK: - Init & deinit
     init(router: EventsRouterProtocol,
          eventsRepository: EventsRepositoryProtocol,
          imageLoader: ImageLoaderProtocol,
@@ -126,6 +130,12 @@ final class EventsViewModel: EventsViewModelProtocol {
         self.imageLoader = imageLoader
         self.artistProperty = Property(value: artist)
         setupModelsMapping()
+    }
+
+    deinit {
+        // cancel requests
+        fetchEventsDisposable?.dispose()
+        downloadArtistPhotoDisposable?.dispose()
     }
 
     // MARK: - Internal Methods
@@ -168,7 +178,8 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     private func startDownloadArtistPhoto() {
-        downloadArtistPhoto
+        downloadArtistPhotoDisposable?.dispose()
+        downloadArtistPhotoDisposable = downloadArtistPhoto
             .apply(artistProperty.value.avatarURL())
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
@@ -176,9 +187,9 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     private func startFetchEvents(page: Int) {
-        let fetchParams = (artistID: artistProperty.value.id, page: page)
-        fetchEvents
-            .apply(fetchParams)
+        fetchEventsDisposable?.dispose()
+        fetchEventsDisposable = fetchEvents
+            .apply((artistID: artistProperty.value.id, page: page))
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithResult { [weak self] result in

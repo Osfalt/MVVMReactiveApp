@@ -33,12 +33,6 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     @IBOutlet private weak var placeholderLabel: UILabel!
     private lazy var refreshControl = UIRefreshControl()
 
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMMM yyyy"
-        return formatter
-    }()
-
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,15 +56,20 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     }
 
     private func bindToViewModel() {
-        viewModel.pullToRefreshDidTrigger <~ refreshControl.reactive.controlEvents(.valueChanged).map(value: ())
+        let refreshControlValueChanged = refreshControl.reactive.controlEvents(.valueChanged)
+        viewModel.pullToRefreshDidTrigger <~ refreshControlValueChanged.map(value: ())
 
         artistNameLabel.reactive.text <~ viewModel.artistName
         artistPhotoImageView.reactive.image <~ viewModel.artistPhoto
         photoActivityIndicator.reactive.isAnimating <~ viewModel.artistPhotoIsLoading
+
         tableView.reactive.reloadData <~ viewModel.events.map(value: ())
         tableView.reactive.isShowLoadMoreFooter <~ viewModel.eventsAreLoadingMore
+
+        refreshControl.reactive.isRefreshing <~ viewModel.eventsAreLoading
+                                                .and(refreshControlValueChanged.map(value: true))
+
         eventsActivityIndicator.reactive.isAnimating <~ viewModel.eventsAreLoading.take(first: 2)
-        refreshControl.reactive.isRefreshing <~ viewModel.eventsAreLoading.skip(first: 2)
         placeholderLabel.reactive.isHidden <~ viewModel.events.signal.map { !$0.isEmpty }
     }
 
