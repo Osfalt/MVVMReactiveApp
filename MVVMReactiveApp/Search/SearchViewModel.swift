@@ -46,15 +46,21 @@ final class SearchViewModel: SearchViewModelProtocol {
     private let searchResultsProperty = MutableProperty<[Artist]>([])
     private let artistsCellModelsProperty = MutableProperty<[SearchCellModel]>([])
     private let artistDidSelectPipe = Signal<IndexPath, Never>.pipe()
+    private var searchDisposable: Disposable?
 
+    // MARK: Dependencies
     private let router: SearchRouterProtocol
     private let searchService: SearchServiceProtocol
 
-    // MARK: - Init
+    // MARK: - Init & deinit
     init(router: SearchRouterProtocol, searchService: SearchServiceProtocol) {
         self.router = router
         self.searchService = searchService
         setupModelsMapping()
+    }
+
+    deinit {
+        searchDisposable?.dispose()
     }
 
     // MARK: - Internal Methods
@@ -74,7 +80,9 @@ final class SearchViewModel: SearchViewModelProtocol {
     private func observeSearchQuery() {
         searchQueryPipe.output
             .observeValues { [weak self] query in
-                self?.searchService
+                guard let self = self else { return }
+                self.searchDisposable?.dispose()
+                self.searchDisposable = self.searchService
                     .searchArtists(query: query)
                     .observe(on: UIScheduler())
                     .startWithResult { [weak self] result in
