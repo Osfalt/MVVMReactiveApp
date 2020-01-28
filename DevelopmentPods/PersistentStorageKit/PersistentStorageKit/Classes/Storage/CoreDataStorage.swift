@@ -153,6 +153,26 @@ final class CoreDataStorage: PersistentStorage {
         saveContext()
     }
 
+    // MARK: Counting
+    func count<T: PersistentConvertible>(ofType type: T.Type) -> Int {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        fetchRequest.resultType = NSFetchRequestResultType.countResultType
+
+        let objectsCount = try? defaultContext.count(for: fetchRequest)
+        return objectsCount ?? 0
+    }
+
+    func count<T: PersistentConvertible>(ofType type: T.Type, byKey key: StorageKey) -> Int {
+        let entityName = String(describing: T.ManagedObject.self)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        fetchRequest.resultType = NSFetchRequestResultType.countResultType
+        fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
+
+        let objectsCount = try? defaultContext.count(for: fetchRequest)
+        return objectsCount ?? 0
+    }
+
     // MARK: Flush
     func flush() {
         saveContext()
@@ -160,13 +180,15 @@ final class CoreDataStorage: PersistentStorage {
 
     // MARK: - Private Methods
     private func saveContext() {
-        guard defaultContext.hasChanges else { return }
+        DispatchQueue.main.async {
+            guard self.defaultContext.hasChanges else { return }
 
-        do {
-            try defaultContext.save()
-        } catch {
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            do {
+                try self.defaultContext.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
         }
     }
 

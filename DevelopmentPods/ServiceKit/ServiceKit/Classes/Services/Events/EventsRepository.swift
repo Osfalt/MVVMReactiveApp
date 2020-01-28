@@ -14,7 +14,9 @@ import PersistentStorageKit
 // MARK: - Protocol
 public protocol EventsRepositoryProtocol: AnyObject {
 
-    func pastEvents(forArtistID artistID: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<[Event], Error>
+    typealias EventsResult = (events: [Event], isFromCache: Bool)
+
+    func pastEvents(forArtistID artistID: Int, ascending: Bool, page: Int, perPage: Int) -> SignalProducer<EventsResult, Error>
 
 }
 
@@ -35,7 +37,7 @@ final class EventsRepository: EventsRepositoryProtocol {
     func pastEvents(forArtistID artistID: Int,
                     ascending: Bool,
                     page: Int,
-                    perPage: Int) -> SignalProducer<[Event], Error>
+                    perPage: Int) -> SignalProducer<EventsResult, Error>
     {
         let fetchRemoteEvents = eventsService.pastEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
 
@@ -44,17 +46,21 @@ final class EventsRepository: EventsRepositoryProtocol {
                 let events = loadedEvents.map { Event(from: $0, artistID: artistID) }
                 self?.storage.save(objects: events)
             })
-            .flatMapError { [weak self] error -> SignalProducer<[Event], Error> in
+            .map { (events: $0, isFromCache: false) }
+            .flatMapError { [weak self] error -> SignalProducer<EventsResult, Error> in
                 guard let self = self else { return .empty }
                 guard error.isNotConnectedToInternet else {
                     return SignalProducer(error: error)
                 }
 
                 return self.fetchSavedEvents(forArtistID: artistID, ascending: ascending, page: page, perPage: perPage)
-                    .flatMap(.latest) { savedEvents -> SignalProducer<[Event], Error> in
-                        savedEvents.isEmpty
-                            ? SignalProducer(error: error)
-                            : SignalProducer(value: savedEvents)
+                    .map { (events: $0, isFromCache: true) }
+                    .flatMap(.latest) { (savedEvents, isFromCache) -> SignalProducer<EventsResult, Error> in
+                        let allArtistEventsCount = self.storage.count(ofType: Event.self,
+                                                                      byKey: .init(name: Event.Field.artistID, value: artistID))
+                        return allArtistEventsCount > 0
+                            ? SignalProducer(value: (savedEvents, isFromCache))
+                            : SignalProducer(error: error)
                     }
             }
     }

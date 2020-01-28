@@ -40,6 +40,7 @@ final class EventsViewModel: EventsViewModelProtocol {
         static let defaultPerPage = 30
     }
 
+    private typealias EventsFetchResult = (events: [Event], isFromCache: Bool)
     private typealias FetchParams = (artistID: Int, page: Int)
 
     // MARK: - Internal Properties
@@ -87,7 +88,7 @@ final class EventsViewModel: EventsViewModelProtocol {
     private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
     private let loadMoreDidTriggerPipe = Signal<Void, Never>.pipe()
 
-    private lazy var fetchEvents = Action<FetchParams, [Event], Error> { [weak self] artistID, page in
+    private lazy var fetchEvents = Action<FetchParams, EventsFetchResult, Error> { [weak self] artistID, page in
         guard let self = self else { return .empty }
         return self.eventsRepository
             .pastEvents(forArtistID: artistID, ascending: false, page: page, perPage: Constant.defaultPerPage)
@@ -195,8 +196,8 @@ final class EventsViewModel: EventsViewModelProtocol {
             .startWithResult { [weak self] result in
                 guard let self = self else { return }
                 switch result {
-                case .success(let events):
-                    self.handle(events: events)
+                case .success(let events, let isFromCache):
+                    self.handle(fetchedEvents: events, isFromCache: isFromCache)
 
                 case .failure(let error):
                     self.router.show(error: error)
@@ -204,14 +205,17 @@ final class EventsViewModel: EventsViewModelProtocol {
             }
     }
 
-    private func handle(events: [Event]) {
+    private func handle(fetchedEvents: [Event], isFromCache: Bool) {
         if page == Constant.firstPage {
             eventsProperty.value = []
         }
 
-        eventsProperty.value += events
-        isLastPage = events.isEmpty
-        page += 1
+        isLastPage = fetchedEvents.isEmpty && !isFromCache
+
+        if !fetchedEvents.isEmpty {
+            eventsProperty.value += fetchedEvents
+            page += 1
+        }
     }
 
 }

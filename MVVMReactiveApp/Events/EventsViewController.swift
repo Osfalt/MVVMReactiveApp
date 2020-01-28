@@ -19,7 +19,7 @@ final class EventsViewController: UIViewController, ViewControllerMaking {
     // MARK: - Constants
     private enum Constant {
         static let cellIdentifier = "EventCell"
-        static let loadMoreThreshold = 5
+        static let loadMoreThreshold = 8
     }
 
     // MARK: - Properties

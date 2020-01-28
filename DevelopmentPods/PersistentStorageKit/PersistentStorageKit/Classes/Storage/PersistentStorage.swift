@@ -30,6 +30,9 @@ public protocol PersistentStorage: AnyObject {
     func delete<T: PersistentConvertible>(objects: [T])
     func deleteAll<T: PersistentConvertible>(ofType type: T.Type)
 
+    func count<T: PersistentConvertible>(ofType type: T.Type) -> Int
+    func count<T: PersistentConvertible>(ofType type: T.Type, byKey key: StorageKey) -> Int
+
     /// Uses only for Core Data storage implementation. Should use instead of saveContext().
     func flush()
 
