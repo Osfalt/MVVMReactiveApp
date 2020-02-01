@@ -26,22 +26,18 @@ final class ImageLoader: ImageLoaderProtocol {
     private typealias CacheKey = NSString
 
     // MARK: - Private Properties
-    private let configuration: Configuration
     private let httpClient: HTTPClient
     private let imageResizer: ImageResizerProtocol
-    private let imageCache: NSCache<CacheKey, UIImage>
+    private let imageCache: ImageCacheProtocol?
 
     // MARK: - Init
-    init(configuration: Configuration = .init(cacheType: .inMemory),
-         httpClient: HTTPClient = DefaultHTTPClient(),
-         imageResizer: ImageResizerProtocol = ImageResizer())
+    init(httpClient: HTTPClient = DefaultHTTPClient(),
+         imageResizer: ImageResizerProtocol = ImageResizer(),
+         imageCache: ImageCacheProtocol? = UniversalImageCache())
     {
-        self.configuration = configuration
         self.httpClient = httpClient
         self.imageResizer = imageResizer
-
-        imageCache = NSCache()
-        imageCache.totalCostLimit = configuration.inMemoryCacheTotalSize
+        self.imageCache = imageCache
     }
 
     // MARK: - Internal Methods
@@ -50,95 +46,32 @@ final class ImageLoader: ImageLoaderProtocol {
     }
 
     func loadImage(at imageURL: URL, size: CGSize?) -> SignalProducer<ImageResponse, Error> {
-        let cacheKey = self.cacheKey(for: imageURL, size: size)
-        if let cachedImage = imageCache.object(forKey: cacheKey) {
+        if let cachedImage = imageCache?.cachedImage(forURL: imageURL, size: size) {
             return SignalProducer { (image: cachedImage, isFromCache: true) }
         }
 
         return httpClient
             .requestData(URLRequest(url: imageURL))
-            .map { [weak self] data, _ -> (UIImage?, Int) in
-                guard let self = self else { return (nil, 0) }
+            .map { [weak self] data, _ -> UIImage? in
+                guard let self = self else { return nil }
                 var loadedImage = UIImage(data: data)
 
                 if let size = size, let image = loadedImage {
                     loadedImage = self.imageResizer.resizedImage(image, for: size)
                 }
 
-                return (image: loadedImage, sizeInBytes: data.count)
+                return loadedImage
             }
-            .on(value: { [weak self] image, sizeInBytes in
-                guard let self = self else { return }
-                self.saveToInMemoryCacheIfNeeded(image: image,
-                                                 forKey: self.cacheKey(for: imageURL, size: size),
-                                                 cost: sizeInBytes)
+            .on(value: { [weak self] image in
+                self?.saveToCacheIfNeeded(image: image, forURL: imageURL)
             })
-            .map { (image: $0.0, isFromCache: false) }
+            .map { (image: $0, isFromCache: false) }
     }
-    
 
     // MARK: - Private Methods
-    private func saveToInMemoryCacheIfNeeded(image: UIImage?, forKey key: NSString, cost: Int) {
+    private func saveToCacheIfNeeded(image: UIImage?, forURL url: URL) {
         guard let image = image else { return }
-        if configuration.cacheType == .inMemory  {
-            imageCache.setObject(image, forKey: key, cost: cost)
-        }
-    }
-
-    private func cacheKey(for url: URL, size: CGSize?) -> NSString {
-        var key = url.absoluteString
-        if let size = size {
-            key.append("-w\(size.width)-h\(size.height))")
-        }
-        return key as NSString
-    }
-
-}
-
-// MARK: - Configuration
-extension ImageLoader {
-
-    struct Configuration {
-
-        // MARK: - Internal Types
-        enum CacheType {
-            case none
-            case inMemory
-        }
-
-        // MARK: - Private Types
-        private enum Constant {
-            static let defaultInMemoryCacheTotalCostInBytes = 20 * 1024 * 1024
-        }
-
-        // MARK: - Internal Properties
-        let cacheType: CacheType
-        let inMemoryCacheTotalSize: Int
-
-        // MARK: - Init
-        init(cacheType: CacheType, inMemoryCacheTotalSize: Int = Constant.defaultInMemoryCacheTotalCostInBytes) {
-            self.cacheType = cacheType
-            self.inMemoryCacheTotalSize = inMemoryCacheTotalSize
-        }
-
-    }
-
-}
-
-// MARK: - Helper Extensions
-// it prevents eviction of image from memory in background mode
-extension UIImage: NSDiscardableContent {
-
-    public func beginContentAccess() -> Bool {
-        return true
-    }
-
-    public func endContentAccess() { }
-
-    public func discardContentIfPossible() { }
-
-    public func isContentDiscarded() -> Bool {
-        return false
+        imageCache?.saveToCache(image: image, forURL: url)
     }
 
 }
