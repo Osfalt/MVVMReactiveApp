@@ -134,7 +134,6 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     deinit {
-        // cancel requests
         fetchEventsDisposable?.dispose()
         downloadArtistPhotoDisposable?.dispose()
     }

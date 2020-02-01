@@ -70,6 +70,7 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
             .skipNil()
             .debounce(0.3, on: QueueScheduler.main)
 
+        searchController.searchBar.reactive.isAnimating <~ viewModel.searchResultsAreLoading
         tableView.reactive.reloadData <~ viewModel.searchResults.signal.map(value: ())
         placeholderLabel.reactive.isHidden <~ viewModel.searchResults.signal.map { !$0.isEmpty }
     }

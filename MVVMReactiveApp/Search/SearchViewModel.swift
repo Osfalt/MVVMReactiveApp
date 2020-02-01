@@ -16,6 +16,7 @@ protocol SearchViewModelProtocol {
 
     // output
     var searchResults: Property<[SearchCellModel]> { get }
+    var searchResultsAreLoading: Signal<Bool, Never> { get }
 
     // input
     var searchQuery: Signal<String, Never>.Observer { get }
@@ -41,12 +42,23 @@ final class SearchViewModel: SearchViewModelProtocol {
         return Property(artistsCellModelsProperty)
     }
 
+    var searchResultsAreLoading: Signal<Bool, Never> {
+        return searchArtists.isExecuting.signal
+    }
+
     // MARK: - Private Properties
     private let searchQueryPipe = Signal<String, Never>.pipe()
     private let searchResultsProperty = MutableProperty<[Artist]>([])
     private let artistsCellModelsProperty = MutableProperty<[SearchCellModel]>([])
     private let artistDidSelectPipe = Signal<IndexPath, Never>.pipe()
     private var searchDisposable: Disposable?
+
+    private lazy var searchArtists = Action<String, [Artist], Error> { [weak self] query in
+        guard let self = self else { return .empty }
+        return self.searchService
+            .searchArtists(query: query)
+            .observe(on: UIScheduler())
+    }
 
     // MARK: Dependencies
     private let router: SearchRouterProtocol
@@ -82,9 +94,8 @@ final class SearchViewModel: SearchViewModelProtocol {
             .observeValues { [weak self] query in
                 guard let self = self else { return }
                 self.searchDisposable?.dispose()
-                self.searchDisposable = self.searchService
-                    .searchArtists(query: query)
-                    .observe(on: UIScheduler())
+                self.searchDisposable = self.searchArtists
+                    .apply(query)
                     .startWithResult { [weak self] result in
                         guard let self = self else { return }
                         switch result {
