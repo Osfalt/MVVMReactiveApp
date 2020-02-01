@@ -47,6 +47,14 @@ final class SearchViewController: UIViewController, ViewControllerMaking {
         viewModel.viewDidLoad()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !searchController.searchBar.isFirstResponder {
+            searchController.searchBar.becomeFirstResponder()
+        }
+    }
+
     // MARK: - Setup ViewModel
     func setupViewModel(_ viewModel: SearchViewModelProtocol) {
         self.viewModel = viewModel
