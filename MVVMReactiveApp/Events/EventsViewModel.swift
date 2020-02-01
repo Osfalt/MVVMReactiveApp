@@ -210,7 +210,8 @@ final class EventsViewModel: EventsViewModelProtocol {
             eventsProperty.value = []
         }
 
-        isLastPage = fetchedEvents.isEmpty && !isFromCache
+        isLastPage = (fetchedEvents.isEmpty && !isFromCache)
+                  || (eventsProperty.value.isEmpty && fetchedEvents.count < Constant.defaultPerPage)
 
         if !fetchedEvents.isEmpty {
             eventsProperty.value += fetchedEvents
