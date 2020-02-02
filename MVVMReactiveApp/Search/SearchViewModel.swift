@@ -96,6 +96,7 @@ final class SearchViewModel: SearchViewModelProtocol {
                 self.searchDisposable?.dispose()
                 self.searchDisposable = self.searchArtists
                     .apply(query)
+                    .mapError { $0.underlyingError }
                     .startWithResult { [weak self] result in
                         guard let self = self else { return }
                         switch result {
