@@ -36,12 +36,10 @@ final class EventsViewModel: EventsViewModelProtocol {
     // MARK: - Private Types
     private enum Constant {
         static let defaultPhotoSize = CGSize(width: 70, height: 70)
-        static let firstPage = 1
-        static let defaultPerPage = 30
     }
 
     private typealias EventsFetchResult = (events: [Event], isFromCache: Bool)
-    private typealias FetchParams = (artistID: Int, page: Int)
+    private typealias FetchParams = (artistID: Int, page: Int, perPage: Int)
 
     // MARK: - Internal Properties
     var artistName: Property<String> {
@@ -67,7 +65,7 @@ final class EventsViewModel: EventsViewModelProtocol {
     var eventsAreLoadingMore: Signal<Bool, Never> {
         return fetchEvents.isExecuting.signal
             .filter { [weak self] _ in
-                self?.page != Constant.firstPage
+                self?.paginator.isFirstPage != true
             }
     }
 
@@ -88,10 +86,10 @@ final class EventsViewModel: EventsViewModelProtocol {
     private let pullToRefreshDidTriggerPipe = Signal<Void, Never>.pipe()
     private let loadMoreDidTriggerPipe = Signal<Void, Never>.pipe()
 
-    private lazy var fetchEvents = Action<FetchParams, EventsFetchResult, Error> { [weak self] artistID, page in
+    private lazy var fetchEvents = Action<FetchParams, EventsFetchResult, Error> { [weak self] artistID, page, perPage in
         guard let self = self else { return .empty }
         return self.eventsRepository
-            .pastEvents(forArtistID: artistID, ascending: false, page: page, perPage: Constant.defaultPerPage)
+            .pastEvents(forArtistID: artistID, ascending: false, page: page, perPage: perPage)
             .observe(on: UIScheduler())
     }
 
@@ -105,9 +103,7 @@ final class EventsViewModel: EventsViewModelProtocol {
 
     private var fetchEventsDisposable: Disposable?
     private var downloadArtistPhotoDisposable: Disposable?
-
-    private var page = Constant.firstPage
-    private var isLastPage = false
+    private let paginator = Paginator()
 
     private lazy var eventDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -142,9 +138,8 @@ final class EventsViewModel: EventsViewModelProtocol {
     func viewDidLoad() {
         pullToRefreshDidTriggerPipe.output.observeValues { [weak self] in
             guard let self = self else { return }
-            self.page = Constant.firstPage
-            self.isLastPage = false
-            self.startFetchEvents(page: self.page)
+            self.paginator.reset()
+            self.startFetchEvents(page: self.paginator.page, perPage: self.paginator.perPage)
             self.startDownloadArtistPhoto()
         }
 
@@ -153,14 +148,14 @@ final class EventsViewModel: EventsViewModelProtocol {
             .observeValues { [weak self] in
                 guard let self = self,
                     !self.fetchEvents.isExecuting.value,
-                    !self.isLastPage else {
+                    !self.paginator.isLastPage else {
                         return
                 }
-                self.startFetchEvents(page: self.page)
+                self.startFetchEvents(page: self.paginator.page, perPage: self.paginator.perPage)
             }
 
         startDownloadArtistPhoto()
-        startFetchEvents(page: page)
+        startFetchEvents(page: paginator.page, perPage: paginator.perPage)
     }
 
     // MARK: - Private Methods
@@ -186,10 +181,10 @@ final class EventsViewModel: EventsViewModelProtocol {
             .start()
     }
 
-    private func startFetchEvents(page: Int) {
+    private func startFetchEvents(page: Int, perPage: Int) {
         fetchEventsDisposable?.dispose()
         fetchEventsDisposable = fetchEvents
-            .apply((artistID: artistProperty.value.id, page: page))
+            .apply((artistID: artistProperty.value.id, page: page, perPage: perPage))
             .mapError { $0.underlyingError }
             .observe(on: UIScheduler())
             .startWithResult { [weak self] result in
@@ -205,16 +200,16 @@ final class EventsViewModel: EventsViewModelProtocol {
     }
 
     private func handle(fetchedEvents: [Event], isFromCache: Bool) {
-        if page == Constant.firstPage {
+        if paginator.isFirstPage {
             eventsProperty.value = []
         }
 
-        isLastPage = (fetchedEvents.isEmpty && !isFromCache)
-                  || (eventsProperty.value.isEmpty && fetchedEvents.count < Constant.defaultPerPage)
+        paginator.updatePage(withCurrentItemsCount: eventsProperty.value.count,
+                             fetchedItemsCount: fetchedEvents.count,
+                             isFromCache: isFromCache)
 
         if !fetchedEvents.isEmpty {
             eventsProperty.value += fetchedEvents
-            page += 1
         }
     }
 
