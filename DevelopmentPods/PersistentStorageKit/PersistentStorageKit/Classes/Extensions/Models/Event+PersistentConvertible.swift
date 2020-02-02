@@ -46,7 +46,7 @@ extension Event: PersistentConvertible {
     }
 
     public func toManagedObject() -> ManagedObject {
-        let eventManagedObject = EventManagedObject.newInDefaultContext()
+        let eventManagedObject = EventManagedObject.newInPrivateContext()
         eventManagedObject.identifier = Int64(id)
         eventManagedObject.name = name
         eventManagedObject.type = type

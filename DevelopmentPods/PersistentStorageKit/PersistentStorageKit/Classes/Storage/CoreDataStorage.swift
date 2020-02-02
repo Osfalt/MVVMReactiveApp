@@ -18,9 +18,16 @@ final class CoreDataStorage: PersistentStorage {
     // MARK: Internal Properties
     static let shared = CoreDataStorage()
 
-    var defaultContext: NSManagedObjectContext {
+    var mainContext: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
+
+    private(set) lazy var privateContext: NSManagedObjectContext = {
+        let privateContext = persistentContainer.newBackgroundContext()
+        privateContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        privateContext.automaticallyMergesChangesFromParent = true
+        return privateContext
+    }()
 
     // MARK: - Private Properties
     private lazy var persistentContainer: NSPersistentContainer = {
@@ -55,7 +62,7 @@ final class CoreDataStorage: PersistentStorage {
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
         fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let managedObjects = try? mainContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
 
         return objects?.first
@@ -67,7 +74,7 @@ final class CoreDataStorage: PersistentStorage {
         fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
         fetchRequest.sortDescriptors = sorting
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let managedObjects = try? mainContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
 
         return objects ?? []
@@ -85,7 +92,7 @@ final class CoreDataStorage: PersistentStorage {
         fetchRequest.fetchOffset = offset
         fetchRequest.fetchLimit = limit
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let managedObjects = try? mainContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
 
         return objects ?? []
@@ -96,7 +103,7 @@ final class CoreDataStorage: PersistentStorage {
         let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
         fetchRequest.sortDescriptors = sorting
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
+        let managedObjects = try? mainContext.fetch(fetchRequest)
         let objects = managedObjects?.map(T.init(managedObject:))
 
         return objects ?? []
@@ -104,53 +111,68 @@ final class CoreDataStorage: PersistentStorage {
 
     // MARK: Saving
     func save<T: PersistentConvertible>(object: T) {
-        defaultContext.insert(object.toManagedObject())
-        saveContext()
+        privateContext.perform { [weak self] in
+            guard let self = self else { return }
+            self.privateContext.insert(object.toManagedObject())
+            self.savePrivateContext()
+        }
     }
 
     func save<T: PersistentConvertible>(objects: [T]) {
-        objects.forEach { defaultContext.insert($0.toManagedObject()) }
-        saveContext()
+        privateContext.perform { [weak self] in
+            guard let self = self else { return }
+            objects.forEach { self.privateContext.insert($0.toManagedObject()) }
+            self.savePrivateContext()
+        }
     }
 
     // MARK: Deleting
     func delete<T: PersistentConvertible>(object: T) {
-        let entityName = String(describing: T.ManagedObject.self)
-        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
-        fetchRequest.predicate = NSPredicate(format: "\(object.primaryKey.name) == %d", object.primaryKey.value)
+        privateContext.perform { [weak self] in
+            guard let self = self else { return }
+            let entityName = String(describing: T.ManagedObject.self)
+            let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+            fetchRequest.predicate = NSPredicate(format: "\(object.primaryKey.name) == %d", object.primaryKey.value)
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
-        managedObjects?.forEach { defaultContext.delete($0) }
+            let managedObjects = try? self.privateContext.fetch(fetchRequest)
+            managedObjects?.forEach { self.privateContext.delete($0) }
 
-        saveContext()
+            self.savePrivateContext()
+        }
     }
 
     func delete<T: PersistentConvertible>(objects: [T]) {
-        let entityName = String(describing: T.ManagedObject.self)
-        let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
+        privateContext.perform { [weak self] in
+            guard let self = self else { return }
+            let entityName = String(describing: T.ManagedObject.self)
+            let fetchRequest = NSFetchRequest<T.ManagedObject>(entityName: entityName)
 
-        let predicates = objects.map { NSPredicate(format: "\($0.primaryKey.name) == %d", $0.primaryKey.value) }
-        fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+            let predicates = objects.map { NSPredicate(format: "\($0.primaryKey.name) == %d", $0.primaryKey.value) }
+            fetchRequest.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
 
-        let managedObjects = try? defaultContext.fetch(fetchRequest)
-        managedObjects?.forEach { defaultContext.delete($0) }
+            let managedObjects = try? self.privateContext.fetch(fetchRequest)
+            managedObjects?.forEach { self.privateContext.delete($0) }
 
-        saveContext()
+            self.savePrivateContext()
+        }
     }
 
     func deleteAll<T: PersistentConvertible>(ofType type: T.Type) {
-        let entityName = String(describing: T.ManagedObject.self)
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        deleteRequest.resultType = .resultTypeObjectIDs
-        let result = try? defaultContext.execute(deleteRequest) as? NSBatchDeleteResult
+        privateContext.perform { [weak self] in
+            guard let self = self else { return }
+            let entityName = String(describing: T.ManagedObject.self)
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            deleteRequest.resultType = .resultTypeObjectIDs
+            let result = try? self.privateContext.execute(deleteRequest) as? NSBatchDeleteResult
 
-        if let objectIDArray = result?.result as? [NSManagedObjectID] {
-            let changes = [NSDeletedObjectsKey: objectIDArray]
-            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [defaultContext])
+            if let objectIDArray = result?.result as? [NSManagedObjectID] {
+                let changes = [NSDeletedObjectsKey: objectIDArray]
+                NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self.privateContext])
+            }
+
+            self.savePrivateContext()
         }
-
-        saveContext()
     }
 
     // MARK: Counting
@@ -159,7 +181,7 @@ final class CoreDataStorage: PersistentStorage {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         fetchRequest.resultType = NSFetchRequestResultType.countResultType
 
-        let objectsCount = try? defaultContext.count(for: fetchRequest)
+        let objectsCount = try? mainContext.count(for: fetchRequest)
         return objectsCount ?? 0
     }
 
@@ -169,22 +191,22 @@ final class CoreDataStorage: PersistentStorage {
         fetchRequest.resultType = NSFetchRequestResultType.countResultType
         fetchRequest.predicate = NSPredicate(format: "\(key.name) == %d", key.value)
 
-        let objectsCount = try? defaultContext.count(for: fetchRequest)
+        let objectsCount = try? mainContext.count(for: fetchRequest)
         return objectsCount ?? 0
     }
 
     // MARK: Flush
     func flush() {
-        saveContext()
+        savePrivateContext()
     }
 
     // MARK: - Private Methods
-    private func saveContext() {
-        DispatchQueue.main.async {
-            guard self.defaultContext.hasChanges else { return }
+    private func savePrivateContext() {
+        privateContext.perform {
+            guard self.privateContext.hasChanges else { return }
 
             do {
-                try self.defaultContext.save()
+                try self.privateContext.save()
             } catch {
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")

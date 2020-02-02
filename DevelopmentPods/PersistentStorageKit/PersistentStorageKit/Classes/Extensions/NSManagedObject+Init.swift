@@ -9,13 +9,13 @@ import CoreData
 
 extension NSManagedObject {
 
-    static func newInDefaultContext() -> Self {
-        let context = CoreDataStorage.shared.defaultContext
+    static func newInPrivateContext() -> Self {
+        let context = CoreDataStorage.shared.privateContext
         let entityName = String(describing: self)
         guard let entity = NSEntityDescription.entity(forEntityName: entityName, in: context) else {
             preconditionFailure("Can't initialize entity with name \(entityName) in context \(context)")
         }
-        return Self(entity: entity, insertInto: context)
+        return Self(entity: entity, insertInto: nil)
     }
 
 }
